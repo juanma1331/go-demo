@@ -53,7 +53,7 @@ seed-db:
 
 .PHONY: delete-db
 delete-db:
-	@del .\internal\infra\data.sqlite
+	@del .\data\data.sqlite
 
 
 .PHONY: reset-db
