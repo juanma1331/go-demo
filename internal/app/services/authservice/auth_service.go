@@ -17,7 +17,7 @@ var (
 	SESSION_MAX_AGE     = 86400
 )
 
-type UserRepository interface {
+type AuthUserRepository interface {
 	// InsertUserByEmail inserts a new user into the database using their email.
 	// Returns an error in case of failure.
 	InsertUserByEmail(*domain.User) error

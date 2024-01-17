@@ -8,7 +8,7 @@ import (
 )
 
 type AuthServiceParams struct {
-	UserRepository   UserRepository
+	UserRepository   AuthUserRepository
 	AuthTokenRepo    AuthTokenRepository
 	PasswordManager  PasswordManager
 	AuthTokenManager AuthTokenManager
@@ -17,7 +17,7 @@ type AuthServiceParams struct {
 }
 
 type authService struct {
-	userRepo         UserRepository
+	userRepo         AuthUserRepository
 	authTokenRepo    AuthTokenRepository
 	passwordManager  PasswordManager
 	authTokenManager AuthTokenManager

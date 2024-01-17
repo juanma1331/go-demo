@@ -9,21 +9,21 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type sqliteUserRepository struct {
+type sqliteAuthUserRepository struct {
 	*bun.DB
 }
 
-func NewSqliteUserRepository(db *bun.DB) *sqliteUserRepository {
-	return &sqliteUserRepository{db}
+func NewSqliteUserRepository(db *bun.DB) *sqliteAuthUserRepository {
+	return &sqliteAuthUserRepository{db}
 }
 
-func (bus *sqliteUserRepository) InsertUserByEmail(user *domain.User) error {
+func (bus *sqliteAuthUserRepository) InsertUserByEmail(user *domain.User) error {
 	_, err := bus.NewInsert().Model(user).Exec(context.Background())
 
 	return err
 }
 
-func (bus *sqliteUserRepository) SelectUserByEmail(email string) (*domain.User, error) {
+func (bus *sqliteAuthUserRepository) SelectUserByEmail(email string) (*domain.User, error) {
 	var user domain.User
 	err := bus.NewSelect().Model(&user).Where("email = ?", email).Scan(context.Background())
 	if err != nil {
@@ -37,7 +37,7 @@ func (bus *sqliteUserRepository) SelectUserByEmail(email string) (*domain.User, 
 	return &user, nil
 }
 
-func (bus *sqliteUserRepository) SelectUserByID(id string) (*domain.User, error) {
+func (bus *sqliteAuthUserRepository) SelectUserByID(id string) (*domain.User, error) {
 	var user domain.User
 	err := bus.NewSelect().Model(&user).Where("id = ?", id).Scan(context.Background())
 	if err != nil {

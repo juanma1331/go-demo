@@ -11,7 +11,7 @@ import (
 
 type AuthMiddleware struct {
 	SessionStore     authservice.SessionStore
-	UserRepo         authservice.UserRepository
+	UserRepo         authservice.AuthUserRepository
 	AuthTokenRepo    authservice.AuthTokenRepository
 	AuthTokenManager authservice.AuthTokenManager
 }
