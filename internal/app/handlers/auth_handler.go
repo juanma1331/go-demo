@@ -29,7 +29,12 @@ func NewAuthHandler(as authservice.AuthService, fs app.FlashStore) *authHandler 
 
 func (uh *authHandler) HandleShowLogin(c echo.Context) error {
 	cc := c.(app.AppContext)
-	return cc.RenderComponent(authview.ShowLogin())
+
+	viewModel := authview.LoginViewModel{
+		HasInvalidCredentials: false,
+	}
+
+	return cc.RenderComponent(authview.ShowLogin(viewModel))
 }
 
 func (uh *authHandler) HandleLogin(c echo.Context) error {
@@ -42,12 +47,18 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 
 	if err := uh.authService.Login(cc.Request(), cc.Response(), input); err != nil {
 		if errors.Is(err, authservice.ErrInvalidCredentials) {
-			return cc.RenderComponent(authview.ShowLogin())
+			viewModel := authview.LoginViewModel{
+				HasInvalidCredentials: true,
+			}
+
+			return cc.RenderComponent(authview.ShowLogin(viewModel))
 		}
 
 	}
 
-	app.NewFlashMessage("You have been logged in successfully", "success").AddToSession(uh.flashStore, c.Request(), c.Response())
+	app.NewFlashMessage("You have been logged in successfully", "success").
+		AddToSession(uh.flashStore, c.Request(), c.Response())
+
 	return c.Redirect(302, AFTER_LOGIN_REDIRECT_PATH)
 }
 
