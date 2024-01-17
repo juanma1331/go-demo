@@ -1,0 +1,13 @@
+# Ignore data/data.sqlite
+data/data.sqlite
+
+# Ignore tmp folder which is used to store temporary build files
+tmp/
+
+# Ignore all files in /bin directory
+/bin/*
+
+# Except for the Tailwind CSS binary
+!/bin/tailwindcss
+
+.vscode/
