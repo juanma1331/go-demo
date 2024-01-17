@@ -44,7 +44,7 @@ func (as *authService) Register(i RegisterInput) (RegisterOutput, error) {
 		return output, err
 	}
 
-	if len(valErrs) > 0 {
+	if valErrs != nil {
 		output.ValidationErrors = valErrs
 		return output, nil
 	}
@@ -74,7 +74,7 @@ func (as *authService) Login(r *http.Request, w http.ResponseWriter, i LoginInpu
 		return fmt.Errorf("Login: %w", err)
 	}
 
-	if len(valErrs) > 0 {
+	if valErrs != nil {
 		return ErrInvalidCredentials
 	}
 

@@ -68,7 +68,7 @@ func (uh *authHandler) HandleRegister(c echo.Context) error {
 		return err
 	}
 
-	if len(output.ValidationErrors) > 0 {
+	if output.ValidationErrors != nil {
 		// Here we render the register page again with the validation errors
 		return cc.RenderComponent(authview.ShowRegister())
 	}

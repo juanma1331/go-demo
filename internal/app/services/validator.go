@@ -5,8 +5,7 @@ import (
 )
 
 type Validator interface {
-	Struct(interface{}) ([]ValidationError, error)
-	Var(field interface{}, tag string) ([]ValidationError, error)
+	Struct(interface{}) (*[]ValidationError, error)
 }
 
 type playgroundValidator struct {
@@ -24,17 +23,12 @@ func NewPlaygroundValidator() playgroundValidator {
 	}
 }
 
-func (pv playgroundValidator) Struct(i interface{}) ([]ValidationError, error) {
+func (pv playgroundValidator) Struct(i interface{}) (*[]ValidationError, error) {
 	err := pv.v.Struct(i)
 	return pv.handleValidationError(err)
 }
 
-func (pv playgroundValidator) Var(field interface{}, tag string) ([]ValidationError, error) {
-	err := pv.v.Var(field, tag)
-	return pv.handleValidationError(err)
-}
-
-func (pv playgroundValidator) handleValidationError(err error) ([]ValidationError, error) {
+func (pv playgroundValidator) handleValidationError(err error) (*[]ValidationError, error) {
 	if err == nil {
 		return nil, nil
 	}
@@ -51,7 +45,7 @@ func (pv playgroundValidator) handleValidationError(err error) ([]ValidationErro
 	return nil, err
 }
 
-func (pv playgroundValidator) convertValidationErrors(valErrs validator.ValidationErrors) []ValidationError {
+func (pv playgroundValidator) convertValidationErrors(valErrs validator.ValidationErrors) *[]ValidationError {
 	var validationErrors []ValidationError
 	for _, v := range valErrs {
 		ve := ValidationError{
@@ -60,5 +54,5 @@ func (pv playgroundValidator) convertValidationErrors(valErrs validator.Validati
 		}
 		validationErrors = append(validationErrors, ve)
 	}
-	return validationErrors
+	return &validationErrors
 }
