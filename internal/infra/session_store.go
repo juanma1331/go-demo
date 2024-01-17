@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go-demo/internal/app"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 	"log"
 	"net/http"
 	"strings"
@@ -45,7 +45,7 @@ func init() {
 
 func NewBunSessionStore(db *bun.DB, keyPairs ...[]byte) (*bunSessionStore, error) {
 
-	return newSqliteStoreFromConnection(db, services.SESSION_TABLE_NAME, services.SESSION_PATH, services.SESSION_MAX_AGE, keyPairs...)
+	return newSqliteStoreFromConnection(db, authservice.SESSION_TABLE_NAME, authservice.SESSION_PATH, authservice.SESSION_MAX_AGE, keyPairs...)
 }
 
 func newSqliteStoreFromConnection(db *bun.DB, tableName string, path string, maxAge int, keyPairs ...[]byte) (*bunSessionStore, error) {

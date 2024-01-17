@@ -6,6 +6,7 @@ import (
 	"go-demo/internal/app/handlers"
 	"go-demo/internal/app/middlewares"
 	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 	"go-demo/internal/infra"
 	"go-demo/internal/infra/repositories"
 
@@ -42,7 +43,7 @@ func main() {
 	authTokenRepository := repositories.NewSqliteAuthTokenRepository(dbInstance)
 
 	// Services
-	authService := services.NewAuthService(services.AuthServiceParams{
+	authService := authservice.NewAuthService(authservice.AuthServiceParams{
 		UserRepository:   userRepository,
 		AuthTokenRepo:    authTokenRepository,
 		PasswordManager:  passwordManager,

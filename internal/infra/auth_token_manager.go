@@ -2,7 +2,7 @@ package infra
 
 import (
 	"errors"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
@@ -19,11 +19,11 @@ func (atm *authTokenManager) GenerateToken() uuid.UUID {
 }
 
 func (as *authTokenManager) AddTokenToSession(s *sessions.Session, t uuid.UUID) {
-	s.Values[services.SESSION_TOKEN_FIELD] = t
+	s.Values[authservice.SESSION_TOKEN_FIELD] = t
 }
 
 func (as *authTokenManager) ExtractTokenFromSession(s *sessions.Session) (*uuid.UUID, error) {
-	token, ok := s.Values[services.SESSION_TOKEN_FIELD].(uuid.UUID)
+	token, ok := s.Values[authservice.SESSION_TOKEN_FIELD].(uuid.UUID)
 	if !ok {
 		return nil, errors.New("ExtractTokenFromSession: token not found in session")
 	}

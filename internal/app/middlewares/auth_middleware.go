@@ -4,23 +4,23 @@ import (
 	"errors"
 	"fmt"
 	"go-demo/internal/app"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 
 	"github.com/labstack/echo"
 )
 
 type AuthMiddleware struct {
-	SessionStore     services.SessionStore
-	UserRepo         services.UserRepository
-	AuthTokenRepo    services.AuthTokenRepository
-	AuthTokenManager services.AuthTokenManager
+	SessionStore     authservice.SessionStore
+	UserRepo         authservice.UserRepository
+	AuthTokenRepo    authservice.AuthTokenRepository
+	AuthTokenManager authservice.AuthTokenManager
 }
 
 func (am AuthMiddleware) LoadUserMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(app.AppContext)
 
-		session, err := am.SessionStore.Get(c.Request(), services.SESSION_NAME)
+		session, err := am.SessionStore.Get(c.Request(), authservice.SESSION_NAME)
 		if err != nil {
 			cc.Error(echo.NewHTTPError(500, fmt.Errorf("LoadUserMiddleware: Failed to get session: %w", err)))
 			return next(cc)
@@ -37,7 +37,7 @@ func (am AuthMiddleware) LoadUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 
 		authToken, err := am.AuthTokenRepo.SelectToken(token.String())
 		if err != nil {
-			if errors.Is(err, services.ErrTokenNotFound) {
+			if errors.Is(err, authservice.ErrTokenNotFound) {
 				return next(cc)
 			}
 
@@ -47,7 +47,7 @@ func (am AuthMiddleware) LoadUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 
 		user, err := am.UserRepo.SelectUserByID(authToken.UserID.String())
 		if err != nil {
-			if errors.Is(err, services.ErrUserNotFound) {
+			if errors.Is(err, authservice.ErrUserNotFound) {
 				return next(cc)
 			}
 

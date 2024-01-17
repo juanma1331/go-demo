@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 	"go-demo/internal/domain"
 
 	"github.com/uptrace/bun"
@@ -28,7 +28,7 @@ func (bus *sqliteUserRepository) SelectUserByEmail(email string) (*domain.User, 
 	err := bus.NewSelect().Model(&user).Where("email = ?", email).Scan(context.Background())
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, services.ErrUserNotFound
+			return nil, authservice.ErrUserNotFound
 		}
 
 		return nil, err
@@ -42,7 +42,7 @@ func (bus *sqliteUserRepository) SelectUserByID(id string) (*domain.User, error)
 	err := bus.NewSelect().Model(&user).Where("id = ?", id).Scan(context.Background())
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, services.ErrUserNotFound
+			return nil, authservice.ErrUserNotFound
 		}
 
 		return nil, err

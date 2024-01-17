@@ -1,6 +1,7 @@
-package services
+package authservice
 
 import (
+	"go-demo/internal/app/services"
 	"go-demo/internal/domain"
 	"net/http"
 
@@ -78,5 +79,5 @@ type RegisterInput struct {
 }
 
 type RegisterOutput struct {
-	ValidationErrors []ValidationError
+	ValidationErrors []services.ValidationError
 }

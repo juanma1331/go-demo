@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"go-demo/internal/app"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 	"go-demo/view/authview"
 
 	"github.com/labstack/echo"
@@ -16,11 +16,11 @@ const (
 )
 
 type authHandler struct {
-	authService services.AuthService
+	authService authservice.AuthService
 	flashStore  app.FlashStore
 }
 
-func NewAuthHandler(as services.AuthService, fs app.FlashStore) *authHandler {
+func NewAuthHandler(as authservice.AuthService, fs app.FlashStore) *authHandler {
 	return &authHandler{
 		authService: as,
 		flashStore:  fs,
@@ -35,13 +35,13 @@ func (uh *authHandler) HandleShowLogin(c echo.Context) error {
 func (uh *authHandler) HandleLogin(c echo.Context) error {
 	cc := c.(app.AppContext)
 
-	input := services.LoginInput{}
+	input := authservice.LoginInput{}
 	if err := cc.Bind(&input); err != nil {
 		return err
 	}
 
 	if err := uh.authService.Login(cc.Request(), cc.Response(), input); err != nil {
-		if errors.Is(err, services.ErrInvalidCredentials) {
+		if errors.Is(err, authservice.ErrInvalidCredentials) {
 			return cc.RenderComponent(authview.ShowLogin())
 		}
 
@@ -58,7 +58,7 @@ func (uh *authHandler) HandleShowRegister(c echo.Context) error {
 
 func (uh *authHandler) HandleRegister(c echo.Context) error {
 	cc := c.(app.AppContext)
-	input := services.RegisterInput{}
+	input := authservice.RegisterInput{}
 	if err := cc.Bind(&input); err != nil {
 		return err
 	}

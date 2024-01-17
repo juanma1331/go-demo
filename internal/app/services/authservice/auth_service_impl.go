@@ -1,7 +1,8 @@
-package services
+package authservice
 
 import (
 	"fmt"
+	"go-demo/internal/app/services"
 	"go-demo/internal/domain"
 	"net/http"
 )
@@ -12,7 +13,7 @@ type AuthServiceParams struct {
 	PasswordManager  PasswordManager
 	AuthTokenManager AuthTokenManager
 	SessionStore     SessionStore
-	Validator        Validator
+	Validator        services.Validator
 }
 
 type authService struct {
@@ -21,7 +22,7 @@ type authService struct {
 	passwordManager  PasswordManager
 	authTokenManager AuthTokenManager
 	sessionStore     SessionStore
-	validator        Validator
+	validator        services.Validator
 }
 
 func NewAuthService(params AuthServiceParams) *authService {

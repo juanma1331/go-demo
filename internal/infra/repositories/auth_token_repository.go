@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"go-demo/internal/app/services"
+	"go-demo/internal/app/services/authservice"
 	"go-demo/internal/domain"
 
 	"github.com/google/uuid"
@@ -32,7 +32,7 @@ func (atr *sqliteAuthTokenRepository) SelectToken(token string) (domain.AuthToke
 	err := atr.NewSelect().Model(&at).Where("token = ?", token).Scan(context.Background())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return at, services.ErrTokenNotFound
+			return at, authservice.ErrTokenNotFound
 		}
 
 		return at, err
@@ -46,7 +46,7 @@ func (atr *sqliteAuthTokenRepository) DeleteToken(token string) error {
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return services.ErrTokenNotFound
+			return authservice.ErrTokenNotFound
 		}
 
 	}
