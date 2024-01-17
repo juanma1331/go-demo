@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go-demo/internal/app"
+	"go-demo/internal/app/services"
 	"log"
 	"net/http"
 	"strings"
@@ -42,9 +43,9 @@ func init() {
 	gob.Register(app.FlashMessage{})
 }
 
-func NewBunSessionStore(db *bun.DB, tableName string, path string, maxAge int, keyPairs ...[]byte) (*bunSessionStore, error) {
+func NewBunSessionStore(db *bun.DB, keyPairs ...[]byte) (*bunSessionStore, error) {
 
-	return newSqliteStoreFromConnection(db, tableName, path, maxAge, keyPairs...)
+	return newSqliteStoreFromConnection(db, services.SESSION_TABLE_NAME, services.SESSION_PATH, services.SESSION_MAX_AGE, keyPairs...)
 }
 
 func newSqliteStoreFromConnection(db *bun.DB, tableName string, path string, maxAge int, keyPairs ...[]byte) (*bunSessionStore, error) {

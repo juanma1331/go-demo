@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	sessionStore, err := infra.NewBunSessionStore(dbInstance, "sessions", "/", 86400, []byte("session-secret-key"))
+	sessionStore, err := infra.NewBunSessionStore(dbInstance, []byte("session-secret-key"))
 	if err != nil {
 		panic(err)
 	}

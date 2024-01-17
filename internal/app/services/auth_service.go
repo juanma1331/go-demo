@@ -11,6 +11,9 @@ import (
 var (
 	SESSION_NAME        = "go-demo-session-name"
 	SESSION_TOKEN_FIELD = "token"
+	SESSION_TABLE_NAME  = "sessions"
+	SESSION_PATH        = "/"
+	SESSION_MAX_AGE     = 86400
 )
 
 type UserRepository interface {
