@@ -20,7 +20,7 @@ type authHandler struct {
 	flashStore  app.FlashStore
 }
 
-func NewUserHandler(as services.AuthService, fs app.FlashStore) *authHandler {
+func NewAuthHandler(as services.AuthService, fs app.FlashStore) *authHandler {
 	return &authHandler{
 		authService: as,
 		flashStore:  fs,

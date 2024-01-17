@@ -24,7 +24,7 @@ type authService struct {
 	validator        Validator
 }
 
-func NewUserService(params AuthServiceParams) *authService {
+func NewAuthService(params AuthServiceParams) *authService {
 	return &authService{
 		userRepo:         params.UserRepository,
 		authTokenRepo:    params.AuthTokenRepo,

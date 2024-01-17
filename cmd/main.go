@@ -42,7 +42,7 @@ func main() {
 	authTokenRepository := repositories.NewSqliteAuthTokenRepository(dbInstance)
 
 	// Services
-	authService := services.NewUserService(services.AuthServiceParams{
+	authService := services.NewAuthService(services.AuthServiceParams{
 		UserRepository:   userRepository,
 		AuthTokenRepo:    authTokenRepository,
 		PasswordManager:  passwordManager,
@@ -64,7 +64,7 @@ func main() {
 	}
 
 	// Handlers
-	authHandler := handlers.NewUserHandler(authService, flashStore)
+	authHandler := handlers.NewAuthHandler(authService, flashStore)
 	productHandler := handlers.NewProductHandler()
 
 	// Middlewares

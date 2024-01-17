@@ -7,18 +7,18 @@ import (
 	"github.com/labstack/echo"
 )
 
-type ProductHandler struct{}
+type productHandler struct{}
 
-func NewProductHandler() *ProductHandler {
-	return &ProductHandler{}
+func NewProductHandler() *productHandler {
+	return &productHandler{}
 }
 
-func (h *ProductHandler) HandleProductIndex(c echo.Context) error {
+func (h *productHandler) HandleProductIndex(c echo.Context) error {
 	cc := c.(app.AppContext)
 	return cc.RenderComponent(productview.Index())
 }
 
-func (uh *ProductHandler) HandleProductImage(c echo.Context) error {
+func (uh *productHandler) HandleProductImage(c echo.Context) error {
 	// productId, err := strconv.Atoi(c.Param("id"))
 	// if err != nil {
 	// 	return c.String(http.StatusBadRequest, "Invalid product ID")
