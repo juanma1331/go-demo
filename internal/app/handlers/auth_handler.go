@@ -73,12 +73,14 @@ func (uh *authHandler) HandleRegister(c echo.Context) error {
 		return cc.RenderComponent(authview.ShowRegister())
 	}
 
-	app.NewFlashMessage("You have been registered successfully", "success").AddToSession(uh.flashStore, c.Request(), c.Response())
+	app.NewFlashMessage("You have been registered successfully", "success").
+		AddToSession(uh.flashStore, c.Request(), c.Response())
 	return cc.Redirect(302, AFTER_REGISTER_REDIRECT_PATH)
 }
 
 func (uh *authHandler) HandleLogout(c echo.Context) error {
 	uh.authService.Logout(c.Request(), c.Response())
-	app.NewFlashMessage("You have been logged out successfully", "success").AddToSession(uh.flashStore, c.Request(), c.Response())
+	app.NewFlashMessage("You have been logged out successfully", "success").
+		AddToSession(uh.flashStore, c.Request(), c.Response())
 	return c.Redirect(302, AFTER_LOGOUT_REDIRECT_PATH)
 }
