@@ -10,7 +10,7 @@ import (
 type AppContext struct {
 	echo.Context
 	User  *AuthenticatedUser
-	Flash []FlashMessage
+	Flash *[]FlashMessage
 }
 
 type AuthenticatedUser struct {
@@ -27,16 +27,4 @@ func (c *AppContext) RenderComponent(component templ.Component) error {
 	ctx := context.WithValue(c.Request().Context(), ContextUserKey, c.User)
 
 	return component.Render(ctx, c.Response())
-}
-
-type AppContextMiddleware struct{}
-
-func (ap AppContextMiddleware) CreateAppContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		cc := AppContext{
-			Context: c,
-		}
-
-		return next(cc)
-	}
 }

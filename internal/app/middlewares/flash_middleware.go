@@ -10,7 +10,7 @@ type FlashMiddleware struct {
 	FlashStore app.FlashStore
 }
 
-func (fm FlashMiddleware) LoadFlashMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
+func (fm FlashMiddleware) WithFlashMiddleWare(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(app.AppContext)
 

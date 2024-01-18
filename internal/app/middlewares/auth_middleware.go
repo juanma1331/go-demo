@@ -16,7 +16,7 @@ type AuthMiddleware struct {
 	AuthTokenManager authservice.AuthTokenManager
 }
 
-func (am AuthMiddleware) LoadUserMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(app.AppContext)
 
@@ -68,7 +68,7 @@ func (am AuthMiddleware) LoadUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 	}
 }
 
-func (am AuthMiddleware) RequireLoginMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (am AuthMiddleware) WithAuthenticationRequiredMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(app.AppContext)
 
@@ -80,7 +80,7 @@ func (am AuthMiddleware) RequireLoginMiddleware(next echo.HandlerFunc) echo.Hand
 	}
 }
 
-func (am AuthMiddleware) RequireAdminMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (am AuthMiddleware) WithAdminRequiredMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(app.AppContext)
 

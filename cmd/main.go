@@ -53,7 +53,7 @@ func main() {
 	})
 
 	// Middlewares
-	appContextMiddleware := app.AppContextMiddleware{}
+	appContextMiddleware := middlewares.AppContextMiddleware{}
 	authMiddleware := middlewares.AuthMiddleware{
 		SessionStore:     sessionStore,
 		UserRepo:         userRepository,
@@ -69,9 +69,9 @@ func main() {
 	productHandler := handlers.NewProductHandler()
 
 	// Middlewares
-	ec.Use(appContextMiddleware.CreateAppContextMiddleware)
-	ec.Use(authMiddleware.LoadUserMiddleware)
-	ec.Use(flashMiddleware.LoadFlashMiddleWare)
+	ec.Use(appContextMiddleware.WithAppContextMiddleware)
+	ec.Use(authMiddleware.WithUserMiddleware)
+	ec.Use(flashMiddleware.WithFlashMiddleWare)
 
 	ec.Use(func(hf echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

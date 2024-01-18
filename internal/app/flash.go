@@ -16,7 +16,7 @@ const (
 type FlashStore interface {
 	Get(r *http.Request, name string) (*sessions.Session, error)
 	Save(r *http.Request, w http.ResponseWriter, s *sessions.Session) error
-	LoadFlash(c echo.Context) ([]FlashMessage, error)
+	LoadFlash(c echo.Context) (*[]FlashMessage, error)
 }
 
 type flashStore struct {
@@ -29,7 +29,7 @@ func NewFlashStore(secret string) FlashStore {
 	}
 }
 
-func (fs flashStore) LoadFlash(c echo.Context) ([]FlashMessage, error) {
+func (fs flashStore) LoadFlash(c echo.Context) (*[]FlashMessage, error) {
 	session, err := getSession(fs, c.Request())
 	if err != nil {
 		return nil, fmt.Errorf("LoadFlash: Failed to get session: %w", err)
@@ -46,7 +46,11 @@ func (fs flashStore) LoadFlash(c echo.Context) ([]FlashMessage, error) {
 
 	session.Save(c.Request(), c.Response())
 
-	return flashMessages, nil
+	if len(flashMessages) == 0 {
+		return nil, nil
+	}
+
+	return &flashMessages, nil
 }
 
 type FlashMessage struct {
