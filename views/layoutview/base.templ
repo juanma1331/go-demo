@@ -16,9 +16,13 @@ templ Base() {
 			<header class="h-14 bg-slate-300">
 				<nav>
 					<a href="/">Products</a>
-					<a href="/auth/login">Login</a>
-					<a href="/auth/register">Register</a>
-					<a href="/auth/logout">Logout</a>
+					if views.HasAuthenticatedUser(ctx) {
+						<a href="/auth/logout">Logout</a>
+					}
+					if !views.HasAuthenticatedUser(ctx) {
+						<a href="/auth/login">Login</a>
+						<a href="/auth/register">Register</a>
+					}
 				</nav>
 				<div>
 					if views.HasAuthenticatedUser(ctx) {
