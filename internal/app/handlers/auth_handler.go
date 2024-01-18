@@ -64,7 +64,7 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 
 func (uh *authHandler) HandleShowRegister(c echo.Context) error {
 	cc := c.(app.AppContext)
-	return cc.RenderComponent(authview.RegisterPage())
+	return cc.RenderComponent(authview.RegisterPage(authview.RegisterPageViewModel{}))
 }
 
 func (uh *authHandler) HandleRegister(c echo.Context) error {
@@ -80,8 +80,11 @@ func (uh *authHandler) HandleRegister(c echo.Context) error {
 	}
 
 	if output.ValidationErrors != nil {
-		// Here we render the register page again with the validation errors
-		return cc.RenderComponent(authview.RegisterPage())
+		vm := authview.RegisterPageViewModel{
+			Errors: output.ValidationErrors,
+		}
+
+		return cc.RenderComponent(authview.RegisterPage(vm))
 	}
 
 	app.NewFlashMessage("You have been registered successfully", "success").

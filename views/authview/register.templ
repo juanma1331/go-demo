@@ -1,14 +1,39 @@
 package authview
 
 import "go-demo/views/layoutview"
+import "go-demo/internal/app/services"
 
-templ RegisterPage() {
+type RegisterPageViewModel struct {
+	Errors *services.ValidationErrors
+}
+
+templ RegisterPage(m RegisterPageViewModel) {
 	@layoutview.Base() {
-		<h1>Register form here</h1>
+		<h1>New Account</h1>
 		<form action="/auth/register" method="post">
-			<input type="email" name="email" placeholder="Email"/>
-			<input type="password" name="password" placeholder="Password"/>
-			<input type="submit" value="Register"/>
+			<div>
+				<label for="email">Email</label>
+				<input id="email" type="email" name="email" placeholder="Email"/>
+				if m.Errors != nil {
+					<div class="errors">
+						for _, errMsg := range (*m.Errors)["Email"] {
+							<p>{ errMsg }</p>
+						}
+					</div>
+				}
+			</div>
+			<div>
+				<label for="password">Password</label>
+				<input id="password" type="password" name="password" placeholder="Password"/>
+				if m.Errors != nil {
+					<div class="errors">
+						for _, errMsg := range (*m.Errors)["Password"] {
+							<p>{ errMsg }</p>
+						}
+					</div>
+				}
+			</div>
+			<button type="submit">Register</button>
 		</form>
 	}
 }
