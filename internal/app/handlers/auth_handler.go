@@ -30,7 +30,7 @@ func NewAuthHandler(as authservice.AuthService, fs app.FlashStore) *authHandler 
 func (uh *authHandler) HandleShowLogin(c echo.Context) error {
 	cc := c.(app.AppContext)
 
-	viewModel := authview.LoginViewModel{
+	viewModel := authview.LoginPageViewModel{
 		HasInvalidCredentials: false,
 	}
 
@@ -47,7 +47,7 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 
 	if err := uh.authService.Login(cc.Request(), cc.Response(), input); err != nil {
 		if errors.Is(err, authservice.ErrInvalidCredentials) {
-			viewModel := authview.LoginViewModel{
+			viewModel := authview.LoginPageViewModel{
 				HasInvalidCredentials: true,
 			}
 

@@ -4,11 +4,11 @@ import (
 	"go-demo/views/layoutview"
 )
 
-type LoginViewModel struct {
+type LoginPageViewModel struct {
 	HasInvalidCredentials bool
 }
 
-templ LoginPage(m LoginViewModel) {
+templ LoginPage(m LoginPageViewModel) {
 	@layoutview.Base() {
 		<main>
 			<h1 class="text-red-400 text-center">Login</h1>
