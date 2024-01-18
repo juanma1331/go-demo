@@ -5,8 +5,10 @@ import (
 )
 
 type Validator interface {
-	Struct(interface{}) (*[]ValidationError, error)
+	Struct(interface{}) (*ValidationErrors, error)
 }
+
+type ValidationErrors map[string][]string
 
 type playgroundValidator struct {
 	v *validator.Validate
@@ -23,12 +25,12 @@ func NewPlaygroundValidator() playgroundValidator {
 	}
 }
 
-func (pv playgroundValidator) Struct(i interface{}) (*[]ValidationError, error) {
+func (pv playgroundValidator) Struct(i interface{}) (*ValidationErrors, error) {
 	err := pv.v.Struct(i)
 	return pv.handleValidationError(err)
 }
 
-func (pv playgroundValidator) handleValidationError(err error) (*[]ValidationError, error) {
+func (pv playgroundValidator) handleValidationError(err error) (*ValidationErrors, error) {
 	if err == nil {
 		return nil, nil
 	}
@@ -45,14 +47,15 @@ func (pv playgroundValidator) handleValidationError(err error) (*[]ValidationErr
 	return nil, err
 }
 
-func (pv playgroundValidator) convertValidationErrors(valErrs validator.ValidationErrors) *[]ValidationError {
-	var validationErrors []ValidationError
-	for _, v := range valErrs {
-		ve := ValidationError{
-			Field:   v.Field(),
-			Message: v.Error(),
-		}
-		validationErrors = append(validationErrors, ve)
+func (pv playgroundValidator) convertValidationErrors(valErrs validator.ValidationErrors) *ValidationErrors {
+	validationErrors := make(ValidationErrors)
+
+	for _, err := range valErrs {
+		field := err.Field()
+		message := err.Tag()
+
+		validationErrors[field] = append(validationErrors[field], message)
 	}
+
 	return &validationErrors
 }
