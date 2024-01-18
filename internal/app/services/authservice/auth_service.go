@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var (
+const (
 	SESSION_NAME        = "go-demo-session-name"
 	SESSION_TOKEN_FIELD = "token"
 	SESSION_TABLE_NAME  = "sessions"

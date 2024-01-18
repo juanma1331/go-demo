@@ -20,8 +20,10 @@ type AuthenticatedUser struct {
 
 type contextKey string
 
-var ContextUserKey contextKey = "user"
-var ContextFlashKey contextKey = "flash"
+const (
+	ContextUserKey  contextKey = "user"
+	ContextFlashKey contextKey = "flash"
+)
 
 func (c *AppContext) RenderComponent(component templ.Component) error {
 
