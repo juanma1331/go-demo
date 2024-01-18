@@ -79,5 +79,5 @@ type RegisterInput struct {
 }
 
 type RegisterOutput struct {
-	ValidationErrors *[]services.ValidationError
+	ValidationErrors *services.ValidationErrors
 }
