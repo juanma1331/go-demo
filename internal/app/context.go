@@ -18,13 +18,15 @@ type AuthenticatedUser struct {
 	IsAdmin bool
 }
 
-type userKey string
+type contextKey string
 
-var ContextUserKey userKey = "user"
+var ContextUserKey contextKey = "user"
+var ContextFlashKey contextKey = "flash"
 
 func (c *AppContext) RenderComponent(component templ.Component) error {
 
 	ctx := context.WithValue(c.Request().Context(), ContextUserKey, c.User)
+	ctx = context.WithValue(ctx, ContextFlashKey, c.Flash)
 
 	return component.Render(ctx, c.Response())
 }

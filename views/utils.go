@@ -13,3 +13,12 @@ func HasAuthenticatedUser(ctx context.Context) bool {
 
 	return user != nil
 }
+
+func GetFlash(ctx context.Context) *[]app.FlashMessage {
+	flash, ok := ctx.Value(app.ContextFlashKey).(*[]app.FlashMessage)
+	if !ok {
+		return nil
+	}
+
+	return flash
+}
