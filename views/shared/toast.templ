@@ -1,0 +1,19 @@
+package shared
+
+import "go-demo/internal/app"
+
+script notifyToast(messages *[]app.FlashMessage) {
+    const createToast = (message, type) => {
+        const toast = document.createElement('div');
+        toast.classList.add('toast');
+        toast.classList.add(type);
+        toast.innerText = message;
+        return toast;
+.    }
+}
+
+templ Toast() {
+	<div id="toast-container" class="hidden">
+		Toast messages here
+	</div>
+}

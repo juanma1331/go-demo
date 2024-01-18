@@ -1,8 +1,8 @@
 # Ignore data/data.sqlite
-data/data.sqlite
+/data/data.sqlite
 
 # Ignore tmp folder which is used to store temporary build files
-tmp/
+/tmp
 
 # Ignore all files in /bin directory
 /bin/*
@@ -13,4 +13,4 @@ tmp/
 .vscode/
 
 # Ignore output.css
-assets/css/output.css
+/assets/css/output.css
