@@ -15,7 +15,7 @@ func NewProductHandler() *productHandler {
 
 func (h *productHandler) HandleProductIndex(c echo.Context) error {
 	cc := c.(app.AppContext)
-	return cc.RenderComponent(productview.Index())
+	return cc.RenderComponent(productview.IndexPage())
 }
 
 func (uh *productHandler) HandleProductImage(c echo.Context) error {
