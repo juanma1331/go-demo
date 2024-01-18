@@ -14,11 +14,6 @@ type playgroundValidator struct {
 	v *validator.Validate
 }
 
-type ValidationError struct {
-	Field   string
-	Message string
-}
-
 func NewPlaygroundValidator() playgroundValidator {
 	return playgroundValidator{
 		v: validator.New(validator.WithRequiredStructEnabled()),
