@@ -13,7 +13,7 @@ templ LoginPage(m LoginViewModel) {
 		<main>
 			<h1 class="text-red-400 text-center">Login</h1>
 			<form action="/auth/login" method="post">
-				if lm.HasInvalidCredentials {
+				if m.HasInvalidCredentials {
 					<p class="text-red-400 text-center">Invalid credentials</p>
 				}
 				<div class="flex flex-col">
