@@ -11,3 +11,6 @@ tmp/
 !/bin/tailwindcss
 
 .vscode/
+
+# Ignore output.css
+assets/css/output.css

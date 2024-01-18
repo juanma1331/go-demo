@@ -4,7 +4,7 @@ import (
 	"errors"
 	"go-demo/internal/app"
 	"go-demo/internal/app/services/authservice"
-	"go-demo/view/authview"
+	"go-demo/views/authview"
 
 	"github.com/labstack/echo"
 )

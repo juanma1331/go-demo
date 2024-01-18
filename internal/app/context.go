@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+
 	"github.com/a-h/templ"
 	"github.com/labstack/echo"
 )
@@ -16,8 +18,15 @@ type AuthenticatedUser struct {
 	IsAdmin bool
 }
 
+type userKey string
+
+var ContextUserKey userKey = "user"
+
 func (c *AppContext) RenderComponent(component templ.Component) error {
-	return component.Render(c.Request().Context(), c.Response())
+
+	ctx := context.WithValue(c.Request().Context(), ContextUserKey, c.User)
+
+	return component.Render(ctx, c.Response())
 }
 
 type AppContextMiddleware struct{}

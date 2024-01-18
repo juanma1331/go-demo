@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"go-demo/internal/app"
-	"go-demo/view/productview"
+	"go-demo/views/productview"
 
 	"github.com/labstack/echo"
 )

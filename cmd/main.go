@@ -85,7 +85,7 @@ func main() {
 	ec.Use(middleware.Gzip())
 
 	// Product routes
-	ec.GET("/", productHandler.HandleProductIndex, authMiddleware.RequireLoginMiddleware)
+	ec.GET("/", productHandler.HandleProductIndex)
 	// app.GET("/products", productHandler.HandleProductIndex)
 	// app.GET("/products/:id", productHandler.HandleProductDetail)
 	// app.GET("/products/:id/image", productHandler.HandleProductImage)

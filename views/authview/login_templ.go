@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"go-demo/view/layoutview"
+	"go-demo/views/layoutview"
 )
 
 type LoginViewModel struct {
