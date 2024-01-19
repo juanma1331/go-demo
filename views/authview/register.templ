@@ -13,25 +13,33 @@ templ RegisterPage(m RegisterPageViewModel) {
 		<form action="/auth/register" method="post">
 			<div>
 				<label for="email">Email</label>
-				<input id="email" type="email" name="email" placeholder="Email"/>
-				if m.Errors != nil {
-					<div class="errors">
+				<input
+					id="email"
+					type="email"
+					name="email"
+					placeholder="Email"
+					hx-get="/auth/register/validate-email"
+					hx-trigger="change, keyup delay:200ms changed"
+					hx-target="next .errors"
+				/>
+				<ul class="errors">
+					if m.Errors != nil {
 						for _, errMsg := range (*m.Errors)["Email"] {
-							<p>{ errMsg }</p>
+							<li>{ errMsg }</li>
 						}
-					</div>
-				}
+					}
+				</ul>
 			</div>
 			<div>
 				<label for="password">Password</label>
 				<input id="password" type="password" name="password" placeholder="Password"/>
-				if m.Errors != nil {
-					<div class="errors">
+				<ul class="errors">
+					if m.Errors != nil {
 						for _, errMsg := range (*m.Errors)["Password"] {
-							<p>{ errMsg }</p>
+							<li>{ errMsg }</li>
 						}
-					</div>
-				}
+					}
+				</ul>
 			</div>
 			<button type="submit">Register</button>
 		</form>

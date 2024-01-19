@@ -135,3 +135,19 @@ func (as *authService) Logout(r *http.Request, w http.ResponseWriter) error {
 
 	return as.sessionStore.Delete(r, w, session)
 }
+
+func (as *authService) ValidateRegisterEmail(i ValidateRegisterEmailInput) (ValidateRegisterEmailOutput, error) {
+	output := ValidateRegisterEmailOutput{}
+
+	valErrs, err := as.validator.Struct(i)
+	if err != nil {
+		return output, err
+	}
+
+	if valErrs != nil {
+		output.ValidationErrors = valErrs
+		return output, nil
+	}
+
+	return output, nil
+}

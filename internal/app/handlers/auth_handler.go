@@ -5,6 +5,7 @@ import (
 	"go-demo/internal/app"
 	"go-demo/internal/app/services/authservice"
 	"go-demo/views/authview"
+	"go-demo/views/components"
 
 	"github.com/labstack/echo"
 )
@@ -90,6 +91,28 @@ func (uh *authHandler) HandleRegister(c echo.Context) error {
 	app.NewFlashMessage("You have been registered successfully", "success").
 		AddToSession(uh.flashStore, c.Request(), c.Response())
 	return cc.Redirect(302, AFTER_REGISTER_REDIRECT_PATH)
+}
+
+func (uh *authHandler) ValidateRegisterEmail(c echo.Context) error {
+	cc := c.(app.AppContext)
+	input := authservice.ValidateRegisterEmailInput{}
+	if err := cc.Bind(&input); err != nil {
+		return err
+	}
+
+	output, err := uh.authService.ValidateRegisterEmail(input)
+	if err != nil {
+		return err
+	}
+
+	if output.ValidationErrors != nil {
+		errors := (*output.ValidationErrors)["Email"]
+
+		return cc.RenderComponent(components.ValidationErrors(errors))
+	}
+
+	return cc.String(200, "")
+
 }
 
 func (uh *authHandler) HandleLogout(c echo.Context) error {

@@ -108,8 +108,10 @@ func main() {
 	// Auth routes
 	ag := ec.Group("/auth")
 	ag.GET("/register", authHandler.HandleShowRegister)
-	ag.GET("/login", authHandler.HandleShowLogin)
 	ag.POST("/register", authHandler.HandleRegister)
+	ag.GET("/register/validate-email", authHandler.ValidateRegisterEmail)
+
+	ag.GET("/login", authHandler.HandleShowLogin)
 	ag.POST("/login", authHandler.HandleLogin)
 	ag.GET("/logout", authHandler.HandleLogout)
 

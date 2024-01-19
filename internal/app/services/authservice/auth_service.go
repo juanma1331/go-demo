@@ -66,6 +66,7 @@ type AuthService interface {
 	Register(RegisterInput) (RegisterOutput, error)
 	Login(*http.Request, http.ResponseWriter, LoginInput) error
 	Logout(r *http.Request, w http.ResponseWriter) error
+	ValidateRegisterEmail(ValidateRegisterEmailInput) (ValidateRegisterEmailOutput, error)
 }
 
 type LoginInput struct {
@@ -79,5 +80,13 @@ type RegisterInput struct {
 }
 
 type RegisterOutput struct {
+	ValidationErrors *services.ValidationErrors
+}
+
+type ValidateRegisterEmailInput struct {
+	Email string `validate:"required,email,unique_email"`
+}
+
+type ValidateRegisterEmailOutput struct {
 	ValidationErrors *services.ValidationErrors
 }
