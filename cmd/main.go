@@ -10,6 +10,7 @@ import (
 	"go-demo/internal/infra"
 	"go-demo/internal/infra/repositories"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -33,14 +34,26 @@ func main() {
 
 	flashStore := app.NewFlashStore("flash-secret-key")
 
-	validator := services.NewPlaygroundValidator()
-
 	authTokenManager := infra.NewAuthTokenManager()
 	passwordManager := infra.NewBCryptPasswordManager()
 
 	// Repositories
 	userRepository := repositories.NewSqliteUserRepository(dbInstance)
 	authTokenRepository := repositories.NewSqliteAuthTokenRepository(dbInstance)
+
+	// Validation
+	uniqueEmailValidation := authservice.UniqueEmailValidator{
+		UserRepository: userRepository,
+	}
+
+	v := validator.New(validator.WithRequiredStructEnabled())
+	validator := services.NewPlaygroundValidator(v)
+
+	validator.RegisterValidation(
+		authservice.ValidatorUniqueEmailKey,
+		uniqueEmailValidation.UniqueEmailValidation,
+		authservice.ValidatorUniqueEmailErrorMsg,
+	)
 
 	// Services
 	authService := authservice.NewAuthService(authservice.AuthServiceParams{

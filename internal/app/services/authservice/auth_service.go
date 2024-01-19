@@ -74,7 +74,7 @@ type LoginInput struct {
 }
 
 type RegisterInput struct {
-	Email    string `validate:"required,email"`
+	Email    string `validate:"required,email,unique_email"`
 	Password string `validate:"required"`
 }
 
