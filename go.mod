@@ -21,7 +21,6 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.41.0 // indirect
 	modernc.org/ccgo/v3 v3.16.15 // indirect
@@ -36,7 +35,6 @@ require (
 
 require (
 	github.com/a-h/templ v0.2.501
-	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/gorilla/sessions v1.2.2
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
