@@ -67,6 +67,7 @@ type AuthService interface {
 	Login(*http.Request, http.ResponseWriter, LoginInput) error
 	Logout(r *http.Request, w http.ResponseWriter) error
 	ValidateRegisterEmail(ValidateRegisterEmailInput) (ValidateRegisterEmailOutput, error)
+	ValidateRegisterPassword(ValidateRegisterPasswordInput) (ValidateRegisterPasswordOutput, error)
 }
 
 type LoginInput struct {
@@ -88,5 +89,13 @@ type ValidateRegisterEmailInput struct {
 }
 
 type ValidateRegisterEmailOutput struct {
+	ValidationErrors *services.ValidationErrors
+}
+
+type ValidateRegisterPasswordInput struct {
+	Password string `validate:"min=8,max=100,required,lowercase,uppercase,number,special"`
+}
+
+type ValidateRegisterPasswordOutput struct {
 	ValidationErrors *services.ValidationErrors
 }

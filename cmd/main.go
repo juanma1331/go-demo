@@ -7,6 +7,7 @@ import (
 	"go-demo/internal/app/middlewares"
 	"go-demo/internal/app/services"
 	"go-demo/internal/app/services/authservice"
+	auth_validation "go-demo/internal/app/services/authservice/validation"
 	"go-demo/internal/infra"
 	"go-demo/internal/infra/repositories"
 
@@ -42,18 +43,10 @@ func main() {
 	authTokenRepository := repositories.NewSqliteAuthTokenRepository(dbInstance)
 
 	// Validation
-	uniqueEmailValidation := authservice.UniqueEmailValidator{
-		UserRepository: userRepository,
-	}
-
 	v := validator.New(validator.WithRequiredStructEnabled())
 	validator := services.NewPlaygroundValidator(v)
-
-	validator.RegisterValidation(
-		authservice.ValidatorUniqueEmailKey,
-		uniqueEmailValidation.UniqueEmailValidation,
-		authservice.ValidatorUniqueEmailErrorMsg,
-	)
+	auth_validation.RegisterUniqueEmailValidator(&validator, userRepository)
+	auth_validation.RegisterPasswordValidations(&validator)
 
 	// Services
 	authService := authservice.NewAuthService(authservice.AuthServiceParams{
@@ -62,7 +55,7 @@ func main() {
 		PasswordManager:  passwordManager,
 		AuthTokenManager: authTokenManager,
 		SessionStore:     sessionStore,
-		Validator:        validator,
+		Validator:        &validator,
 	})
 
 	// Middlewares
@@ -109,7 +102,8 @@ func main() {
 	ag := ec.Group("/auth")
 	ag.GET("/register", authHandler.HandleShowRegister)
 	ag.POST("/register", authHandler.HandleRegister)
-	ag.GET("/register/validate-email", authHandler.ValidateRegisterEmail)
+	ag.GET("/register/validate-email", authHandler.HandleValidateRegisterEmail)
+	ag.GET("/register/validate-password", authHandler.HandleValidateRegisterPassword)
 
 	ag.GET("/login", authHandler.HandleShowLogin)
 	ag.POST("/login", authHandler.HandleLogin)

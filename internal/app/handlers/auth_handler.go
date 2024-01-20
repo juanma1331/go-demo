@@ -93,7 +93,7 @@ func (uh *authHandler) HandleRegister(c echo.Context) error {
 	return cc.Redirect(302, AFTER_REGISTER_REDIRECT_PATH)
 }
 
-func (uh *authHandler) ValidateRegisterEmail(c echo.Context) error {
+func (uh *authHandler) HandleValidateRegisterEmail(c echo.Context) error {
 	cc := c.(app.AppContext)
 	input := authservice.ValidateRegisterEmailInput{}
 	if err := cc.Bind(&input); err != nil {
@@ -107,6 +107,28 @@ func (uh *authHandler) ValidateRegisterEmail(c echo.Context) error {
 
 	if output.ValidationErrors != nil {
 		errors := (*output.ValidationErrors)["Email"]
+
+		return cc.RenderComponent(components.ValidationErrors(errors))
+	}
+
+	return cc.String(200, "")
+
+}
+
+func (uh *authHandler) HandleValidateRegisterPassword(c echo.Context) error {
+	cc := c.(app.AppContext)
+	input := authservice.ValidateRegisterPasswordInput{}
+	if err := cc.Bind(&input); err != nil {
+		return err
+	}
+
+	output, err := uh.authService.ValidateRegisterPassword(input)
+	if err != nil {
+		return err
+	}
+
+	if output.ValidationErrors != nil {
+		errors := (*output.ValidationErrors)["Password"]
 
 		return cc.RenderComponent(components.ValidationErrors(errors))
 	}

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -9,6 +11,7 @@ import (
 
 type Validator interface {
 	Struct(interface{}) (*ValidationErrors, error)
+	RegisterValidation(string, validator.Func, string) error
 }
 
 type ValidationErrors map[string][]string
@@ -55,6 +58,7 @@ func (pv playgroundValidator) handleValidationError(err error) (*ValidationError
 
 	if valErrs, ok := err.(validator.ValidationErrors); ok {
 
+		fmt.Printf("%+v\n", valErrs)
 		return pv.convertValidationErrors(valErrs), nil
 	}
 

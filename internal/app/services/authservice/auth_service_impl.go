@@ -151,3 +151,19 @@ func (as *authService) ValidateRegisterEmail(i ValidateRegisterEmailInput) (Vali
 
 	return output, nil
 }
+
+func (as *authService) ValidateRegisterPassword(i ValidateRegisterPasswordInput) (ValidateRegisterPasswordOutput, error) {
+	output := ValidateRegisterPasswordOutput{}
+
+	valErrs, err := as.validator.Struct(i)
+	if err != nil {
+		return output, err
+	}
+
+	if valErrs != nil {
+		output.ValidationErrors = valErrs
+		return output, nil
+	}
+
+	return output, nil
+}
