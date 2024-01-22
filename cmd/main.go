@@ -92,7 +92,7 @@ func main() {
 
 	// Product routes
 	ec.GET("/", productHandler.HandleProductIndex)
-	// app.GET("/products", productHandler.HandleProductIndex)
+	ec.PUT("/products", productHandler.HandleAddProduct)
 	// app.GET("/products/:id", productHandler.HandleProductDetail)
 	// app.GET("/products/:id/image", productHandler.HandleProductImage)
 

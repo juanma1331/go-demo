@@ -2,12 +2,21 @@ package productview
 
 import (
 	"go-demo/views/layoutview"
+	"go-demo/views/shared"
 )
 
 templ IndexPage() {
 	@layoutview.Base() {
+		@shared.Toast()
 		<main>
 			<h1>Products</h1>
+			<button
+				hx-put="/products"
+				hx-swap="none"
+				hx-target="this"
+			>
+				Add Product
+			</button>
 		</main>
 	}
 }

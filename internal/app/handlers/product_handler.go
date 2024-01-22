@@ -18,6 +18,20 @@ func (h *productHandler) HandleProductIndex(c echo.Context) error {
 	return cc.RenderComponent(productview.IndexPage())
 }
 
+func (h *productHandler) HandleAddProduct(c echo.Context) error {
+
+	trigger := app.HtmxTrigger{
+		Name:  "notify",
+		Value: map[string]string{"message": "Product Added"},
+	}
+
+	if err := app.SetHtmxTrigger(c.Response(), trigger); err != nil {
+		return err
+	}
+
+	return c.String(200, "Product Added")
+}
+
 func (uh *productHandler) HandleProductImage(c echo.Context) error {
 	// productId, err := strconv.Atoi(c.Param("id"))
 	// if err != nil {

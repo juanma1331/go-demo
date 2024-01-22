@@ -1,19 +1,27 @@
 package shared
 
-import "go-demo/internal/app"
+script initToast() {
 
-script notifyToast(messages *[]app.FlashMessage) {
-    const createToast = (message, type) => {
-        const toast = document.createElement('div');
-        toast.classList.add('toast');
-        toast.classList.add(type);
-        toast.innerText = message;
-        return toast;
-.    }
+    const notify = (event) => {
+        const value = JSON.parse(event.detail.value)
+        console.log(value)
+    }
+
+    const toast = document.querySelector('[data-toaster]')
+
+    if (!toast) {
+        throw new Error('No toaster found')
+    }
+
+    document.addEventListener('notify', notify)
+
+    document.addEventListener("htmx:afterRequest", function(evt) {
+        console.log('htmx:afterRequest', evt)
+    })
+
 }
 
 templ Toast() {
-	<div id="toast-container" class="hidden">
-		Toast messages here
-	</div>
+	<div data-toaster class="hidden"></div>
+	@initToast()
 }
