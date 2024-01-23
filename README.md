@@ -2,7 +2,7 @@
 
 ## Description
 
-In the future this will be a template for hypermedia driven web application in golang.
+In the future this will be a template for hypermedia driven web applications in golang.
 
 ### STACK
 
