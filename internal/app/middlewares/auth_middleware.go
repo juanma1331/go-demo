@@ -62,7 +62,7 @@ func (am AuthMiddleware) WithAuthenticationRequiredMiddleware(next echo.HandlerF
 		cc := c.(app.AppContext)
 
 		if cc.User == nil {
-			return c.Redirect(302, "auth/login")
+			return cc.Redirect(302, "auth/login")
 		}
 
 		return next(cc)
@@ -74,7 +74,7 @@ func (am AuthMiddleware) WithAdminRequiredMiddleware(next echo.HandlerFunc) echo
 		cc := c.(app.AppContext)
 
 		if cc.User == nil || !cc.User.IsAdmin {
-			return c.Redirect(302, "auth/login")
+			return cc.Redirect(302, "auth/login")
 		}
 
 		return next(cc)
