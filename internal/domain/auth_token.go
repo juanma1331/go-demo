@@ -6,7 +6,7 @@ import (
 )
 
 type AuthToken struct {
-	bun.BaseModel `bun:"auth_tokens"`
+	bun.BaseModel `bun:"auth_tokens,alias:at"`
 
 	ID     uuid.UUID `bun:"id,pk,type:uuid"`
 	Token  string    `bun:"token,notnull"`

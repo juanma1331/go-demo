@@ -2,24 +2,31 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"go-demo/internal/app"
 	"go-demo/internal/domain"
 	"go-demo/internal/infra"
+	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 func main() {
+	fmt.Println("Starting migration...\n")
 	db, err := infra.OpenDB(infra.DSN)
 	if err != nil {
 		panic(err)
 	}
 
-	// products := createProducts()
+	migrationStart := time.Now()
 
-	// _, insertProductsErr := db.NewInsert().Model(&products).Exec(context.Background())
-	// if insertProductsErr != nil {
-	// 	panic(insertProductsErr)
-	// }
+	products := createProducts()
+
+	_, insertProductsErr := db.NewInsert().Model(&products).Exec(context.Background())
+	if insertProductsErr != nil {
+		panic(insertProductsErr)
+	}
 
 	admin := createAdmin()
 
@@ -27,34 +34,49 @@ func main() {
 	if insertAdminErr != nil {
 		panic(insertAdminErr)
 	}
+
+	migrationEnd := time.Since(migrationStart)
+	fmt.Printf("Migration finished in %s\n", migrationEnd)
 }
 
-// func createProducts() []model.Product {
-// 	images := []string{
-// 		"./cmd/seed/images/1.jpg",
-// 		"./cmd/seed/images/2.jpg",
-// 		"./cmd/seed/images/3.jpg",
-// 		"./cmd/seed/images/4.jpg",
-// 	}
+func createProducts() []domain.Product {
+	images := []string{
+		"./cmd/seed/images/1.jpg",
+		"./cmd/seed/images/2.jpg",
+		"./cmd/seed/images/3.jpg",
+		"./cmd/seed/images/4.jpg",
+	}
 
-// 	var products []model.Product
+	var products []domain.Product
 
-// 	for i, image := range images {
-// 		img, err := imageToBytes(image)
-// 		if err != nil {
-// 			panic(err)
-// 		}
+	for i := 0; i < 50; i++ {
+		image := images[i%len(images)]
+		img, err := imageToBytes(image)
+		if err != nil {
+			panic(err)
+		}
 
-// 		products = append(products, model.Product{
-// 			ID:          uuid.New(),
-// 			Name:        fmt.Sprintf("Product %d", i+1),
-// 			Description: fmt.Sprintf("Product %d description", i+1),
-// 			Image:       img,
-// 		})
-// 	}
+		smallImage, err := app.ResizeImage(img, 200, 200)
+		if err != nil {
+			panic(fmt.Errorf("createProduct: failed to resize small image: %w", err))
+		}
 
-// 	return products
-// }
+		mediumImage, err := app.ResizeImage(img, 384, 192)
+		if err != nil {
+			panic(fmt.Errorf("createProduct: failed to resize medium image: %w", err))
+		}
+
+		products = append(products, domain.Product{
+			ID:          uuid.New(),
+			Name:        fmt.Sprintf("Product %d", i+1),
+			Description: fmt.Sprintf("Product %d description", i+1),
+			ImageSmall:  smallImage,
+			ImageMedium: mediumImage,
+		})
+	}
+
+	return products
+}
 
 func createAdmin() *domain.User {
 	password, err := infra.NewBCryptPasswordManager().GenerateFromPassword("147")
@@ -70,11 +92,11 @@ func createAdmin() *domain.User {
 	}
 }
 
-// func imageToBytes(filepath string) ([]byte, error) {
-// 	img, err := os.ReadFile(filepath)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func imageToBytes(filepath string) ([]byte, error) {
+	img, err := os.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return img, nil
-// }
+	return img, nil
+}

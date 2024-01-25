@@ -72,7 +72,7 @@ func main() {
 
 	// Handlers
 	authHandler := handlers.NewAuthHandler(authService, flashStore)
-	productHandler := handlers.NewProductHandler()
+	demoHandler := handlers.NewDemoHandler(dbInstance)
 
 	// Middlewares
 	ec.Use(appContextMiddleware.WithAppContextMiddleware)
@@ -89,14 +89,14 @@ func main() {
 	})
 
 	ec.Use(middleware.Gzip())
+	ec.Use(middleware.Recover())
 
-	// Product routes
-	ec.GET("/", productHandler.HandleProductIndex)
-	ec.PUT("/products", productHandler.HandleAddProduct)
-	// app.GET("/products/:id", productHandler.HandleProductDetail)
-	// app.GET("/products/:id/image", productHandler.HandleProductImage)
-
-	ec.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
+	// Demo routes
+	ec.GET("/", demoHandler.HandleProductIndex, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.GET("/cart", demoHandler.HandleGetCart, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.PUT("/cart", demoHandler.HandleAddToCart, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.GET("/products", demoHandler.GetProductList, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.GET("/products/:id/image/:size", demoHandler.HandleProductImage, authMiddleware.WithAuthenticationRequiredMiddleware)
 
 	// Auth routes
 	ag := ec.Group("/auth")
@@ -108,6 +108,8 @@ func main() {
 	ag.GET("/login", authHandler.HandleShowLogin)
 	ag.POST("/login", authHandler.HandleLogin)
 	ag.GET("/logout", authHandler.HandleLogout)
+
+	ec.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
 	ec.Start(":8080")
 	fmt.Println("Server running on port 8080")

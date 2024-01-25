@@ -60,6 +60,7 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 		authenticatedUser := &app.AuthenticatedUser{
 			Email:   user.Email,
 			IsAdmin: user.IsAdmin,
+			ID:      user.ID,
 		}
 
 		cc.User = authenticatedUser

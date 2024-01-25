@@ -12,6 +12,8 @@
 
 .vscode/
 
+/data
+
 # Ignore output.css
 /assets/css/output.css
 

@@ -2,6 +2,7 @@ package infra
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
@@ -16,6 +17,11 @@ func OpenDB(dsn string) (*bun.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Set database connection pool
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Hour)
 
 	bunDB := bun.NewDB(db, sqlitedialect.New())
 

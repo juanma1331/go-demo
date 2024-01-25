@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/a-h/templ"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -14,6 +15,7 @@ type AppContext struct {
 }
 
 type AuthenticatedUser struct {
+	ID      uuid.UUID
 	Email   string
 	IsAdmin bool
 }

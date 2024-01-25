@@ -10,13 +10,26 @@ import (
 
 func CreateTables(db *bun.DB, ctx context.Context) error {
 	_, err := db.NewCreateTable().Model((*domain.User)(nil)).Exec(ctx)
-
 	if err != nil {
 		return err
 	}
 
 	_, err = db.NewCreateTable().Model((*domain.AuthToken)(nil)).Exec(ctx)
+	if err != nil {
+		return err
+	}
 
+	_, err = db.NewCreateTable().Model((*domain.Product)(nil)).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NewCreateTable().Model((*domain.Cart)(nil)).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NewCreateTable().Model((*domain.CartDetail)(nil)).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -25,14 +38,12 @@ func CreateTables(db *bun.DB, ctx context.Context) error {
 }
 
 func main() {
-	// DB instantiation
 	db, err := infra.OpenDB(infra.DSN)
 
 	if err != nil {
 		panic(err)
 	}
 
-	// Create tables
 	createTablesErr := CreateTables(db, context.Background())
 
 	if createTablesErr != nil {

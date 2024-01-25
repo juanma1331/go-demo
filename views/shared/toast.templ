@@ -1,27 +1,62 @@
 package shared
 
-script initToast() {
+const NOTIFY_TRIGGER_NAME = "notify"
 
-    const notify = (event) => {
-        const value = JSON.parse(event.detail.value)
-        console.log(value)
+script initToast() {
+    const delay = 3000
+    const toaster = document.querySelector('[data-toaster]')
+
+    /**
+    * @param {string} message
+    * @param {string} type
+    * @returns {HTMLDivElement}
+    */
+    const createToast = (message, type) => {
+        const toast = document.createElement('div')
+        toast.classList.add('toast')
+        toast.classList.add(type)
+        toast.innerText = message
+        return toast
     }
 
-    const toast = document.querySelector('[data-toaster]')
+    const notify = (event) => {
+        // The app use hx-boost to update the DOM, so we need to check if the toaster is still in the DOM
+        if (!document.body.contains(toaster)) {
+            document.removeEventListener('notify', notify)
+        }
 
-    if (!toast) {
+        /**
+        * @type {{message: string, type: string}}
+        */
+        const notification = JSON.parse(event.detail.value)
+
+        if (notification.message === undefined || typeof notification.message !== 'string') {
+            throw new Error('No message provided or message is not a string')
+        }
+
+        if (notification.type === undefined || typeof notification.type !== 'string') {
+            throw new Error('No type provided or type is not a string')
+        }
+
+        const toast = createToast(notification.message, notification.type)
+
+        toaster.appendChild(toast)
+
+        setTimeout(() => {
+            toaster.removeChild(toast)
+        }, delay)
+    }
+
+
+    if (!toaster) {
         throw new Error('No toaster found')
     }
 
     document.addEventListener('notify', notify)
-
-    document.addEventListener("htmx:afterRequest", function(evt) {
-        console.log('htmx:afterRequest', evt)
-    })
-
+    
 }
 
 templ Toast() {
-	<div data-toaster class="hidden"></div>
+	<div data-toaster class="transparent"></div>
 	@initToast()
 }
