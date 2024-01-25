@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"go-demo/internal/app"
 	"go-demo/internal/domain"
@@ -47,8 +48,10 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 		Where("user_id = ?", cc.User.ID).
 		Scan(cc.Request().Context())
 	if err != nil {
-		return err
+		return fmt.Errorf("HandleGetCart: error getting cart: %w", err)
 	}
+
+	fmt.Printf("Cart: %v\n", carts)
 
 	if len(carts) == 0 {
 		cart := domain.Cart{
@@ -96,7 +99,7 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 		Scan(cc.Request().
 			Context())
 	if err != nil {
-		return err
+		return fmt.Errorf("HandleAddToCart: product not found: %w", err)
 	}
 
 	// Check if cart exists
@@ -108,7 +111,7 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 		Scan(cc.Request().Context())
 
 	if err != nil {
-		return err
+		return fmt.Errorf("HandleAddToCart: cart not found: %w", err)
 	}
 
 	// Check if product is already in cart
@@ -124,11 +127,15 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 		cartDetail.Quantity++
 		_, err := h.db.NewUpdate().Model(&cartDetail).Exec(cc.Request().Context())
 		if err != nil {
-			return err
+			return fmt.Errorf("HandleAddToCart: error updating cart detail: %w", err)
 		}
 
 	} else {
+		if err != sql.ErrNoRows {
+			return fmt.Errorf("HandleAddToCart: error checking cart detail: %w", err)
+		}
 		// Product is not in cart, add it
+
 		cartDetail = domain.CartDetail{
 			ID:        uuid.New(),
 			CartID:    cart.ID,
@@ -138,7 +145,7 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 
 		_, err := h.db.NewInsert().Model(&cartDetail).Exec(cc.Request().Context())
 		if err != nil {
-			return err
+			return fmt.Errorf("HandleAddToCart: error inserting cart detail: %w", err)
 		}
 	}
 

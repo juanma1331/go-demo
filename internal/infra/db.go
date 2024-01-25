@@ -18,8 +18,6 @@ func OpenDB(dsn string) (*bun.DB, error) {
 		return nil, err
 	}
 
-	// Set database connection pool
-	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(time.Hour)
 

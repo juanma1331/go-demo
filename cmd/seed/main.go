@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const NUMBER_OF_PRODUCTS = 50
+const NUMBER_OF_PRODUCTS = 3
 
 func main() {
 	fmt.Println("Starting seeding...")
