@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	SESSION_NAME        = "go-demo-session-name"
-	SESSION_TOKEN_FIELD = "token"
-	SESSION_TABLE_NAME  = "sessions"
-	SESSION_PATH        = "/"
-	SESSION_MAX_AGE     = 86400
+	SESSION_NAME          = "go-demo-session-name"
+	SESSION_USER_ID_FIELD = "user_id"
+	SESSION_TABLE_NAME    = "sessions"
+	SESSION_PATH          = "/"
+	SESSION_MAX_AGE       = 86400
 )
 
 type AuthUserRepository interface {
@@ -28,7 +28,7 @@ type AuthUserRepository interface {
 
 	// SelectUserByID searches for a user by their ID.
 	// Returns ErrUserNotFound if the user is not found, and other errors in case of database problems.
-	SelectUserByID(string) (*domain.User, error)
+	SelectUserByID(uuid.UUID) (*domain.User, error)
 }
 
 type PasswordManager interface {
@@ -41,25 +41,6 @@ type SessionStore interface {
 	Save(*http.Request, http.ResponseWriter, *sessions.Session) error
 	Delete(*http.Request, http.ResponseWriter, *sessions.Session) error
 	Get(*http.Request, string) (*sessions.Session, error)
-}
-
-type AuthTokenManager interface {
-	GenerateToken() uuid.UUID
-	AddTokenToSession(*sessions.Session, uuid.UUID)
-	ExtractTokenFromSession(*sessions.Session) (*uuid.UUID, error)
-}
-
-type AuthTokenRepository interface {
-	// InsertToken inserts a new token into the database.
-	InsertToken(*domain.AuthToken) error
-
-	// SelectToken searches for a token by its value.
-	// Returns ErrTokenNotFound if the token is not found, and other errors in case of database problems.
-	SelectToken(token string) (domain.AuthToken, error)
-
-	// DeleteToken deletes a token from the database.
-	// Returns ErrTokenNotFound if the token is not found, and other errors in case of database problems.
-	DeleteToken(token string) error
 }
 
 type AuthService interface {

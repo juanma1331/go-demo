@@ -6,6 +6,7 @@ import (
 	"go-demo/internal/app/services/authservice"
 	"go-demo/internal/domain"
 
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -37,7 +38,7 @@ func (bus *sqliteAuthUserRepository) SelectUserByEmail(email string) (*domain.Us
 	return &user, nil
 }
 
-func (bus *sqliteAuthUserRepository) SelectUserByID(id string) (*domain.User, error) {
+func (bus *sqliteAuthUserRepository) SelectUserByID(id uuid.UUID) (*domain.User, error) {
 	var user domain.User
 	err := bus.NewSelect().Model(&user).Where("id = ?", id).Scan(context.Background())
 	if err != nil {

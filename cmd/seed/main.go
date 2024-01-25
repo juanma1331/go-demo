@@ -12,8 +12,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const NUMBER_OF_PRODUCTS = 50
+
 func main() {
-	fmt.Println("Starting migration...\n")
+	fmt.Println("Starting seeding...")
 	db, err := infra.OpenDB(infra.DSN)
 	if err != nil {
 		panic(err)
@@ -36,7 +38,7 @@ func main() {
 	}
 
 	migrationEnd := time.Since(migrationStart)
-	fmt.Printf("Migration finished in %s\n", migrationEnd)
+	fmt.Printf("Seeding finished in %s\n", migrationEnd)
 }
 
 func createProducts() []domain.Product {
@@ -49,7 +51,7 @@ func createProducts() []domain.Product {
 
 	var products []domain.Product
 
-	for i := 0; i < 50; i++ {
+	for i := 0; i < NUMBER_OF_PRODUCTS; i++ {
 		image := images[i%len(images)]
 		img, err := imageToBytes(image)
 		if err != nil {

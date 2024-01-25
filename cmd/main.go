@@ -35,12 +35,10 @@ func main() {
 
 	flashStore := app.NewFlashStore("flash-secret-key")
 
-	authTokenManager := infra.NewAuthTokenManager()
 	passwordManager := infra.NewBCryptPasswordManager()
 
 	// Repositories
 	userRepository := repositories.NewSqliteUserRepository(dbInstance)
-	authTokenRepository := repositories.NewSqliteAuthTokenRepository(dbInstance)
 
 	// Validation
 	v := validator.New(validator.WithRequiredStructEnabled())
@@ -50,21 +48,17 @@ func main() {
 
 	// Services
 	authService := authservice.NewAuthService(authservice.AuthServiceParams{
-		UserRepository:   userRepository,
-		AuthTokenRepo:    authTokenRepository,
-		PasswordManager:  passwordManager,
-		AuthTokenManager: authTokenManager,
-		SessionStore:     sessionStore,
-		Validator:        &validator,
+		UserRepository:  userRepository,
+		PasswordManager: passwordManager,
+		SessionStore:    sessionStore,
+		Validator:       &validator,
 	})
 
 	// Middlewares
 	appContextMiddleware := middlewares.AppContextMiddleware{}
 	authMiddleware := middlewares.AuthMiddleware{
-		SessionStore:     sessionStore,
-		UserRepo:         userRepository,
-		AuthTokenRepo:    authTokenRepository,
-		AuthTokenManager: authTokenManager,
+		SessionStore: sessionStore,
+		UserRepo:     userRepository,
 	}
 	flashMiddleware := middlewares.FlashMiddleware{
 		FlashStore: flashStore,

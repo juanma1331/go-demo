@@ -14,11 +14,6 @@ func CreateTables(db *bun.DB, ctx context.Context) error {
 		return err
 	}
 
-	_, err = db.NewCreateTable().Model((*domain.AuthToken)(nil)).Exec(ctx)
-	if err != nil {
-		return err
-	}
-
 	_, err = db.NewCreateTable().Model((*domain.Product)(nil)).Exec(ctx)
 	if err != nil {
 		return err

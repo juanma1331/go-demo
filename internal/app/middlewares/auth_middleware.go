@@ -6,14 +6,13 @@ import (
 	"go-demo/internal/app"
 	"go-demo/internal/app/services/authservice"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
 type AuthMiddleware struct {
-	SessionStore     authservice.SessionStore
-	UserRepo         authservice.AuthUserRepository
-	AuthTokenRepo    authservice.AuthTokenRepository
-	AuthTokenManager authservice.AuthTokenManager
+	SessionStore authservice.SessionStore
+	UserRepo     authservice.AuthUserRepository
 }
 
 func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
@@ -30,22 +29,12 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 			return next(cc)
 		}
 
-		token, err := am.AuthTokenManager.ExtractTokenFromSession(session)
-		if err != nil {
+		id, ok := session.Values[authservice.SESSION_USER_ID_FIELD].(uuid.UUID)
+		if !ok {
 			return next(cc)
 		}
 
-		authToken, err := am.AuthTokenRepo.SelectToken(token.String())
-		if err != nil {
-			if errors.Is(err, authservice.ErrTokenNotFound) {
-				return next(cc)
-			}
-
-			c.Error(echo.NewHTTPError(500, fmt.Errorf("LoadUserMiddleware: Failed to select token: %w", err)))
-			return next(cc)
-		}
-
-		user, err := am.UserRepo.SelectUserByID(authToken.UserID.String())
+		user, err := am.UserRepo.SelectUserByID(id)
 		if err != nil {
 			if errors.Is(err, authservice.ErrUserNotFound) {
 				return next(cc)
@@ -54,7 +43,6 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 			c.Error(echo.NewHTTPError(500, fmt.Errorf("LoadUserMiddleware: Failed to select user: %w", err)))
 
 			return next(cc)
-
 		}
 
 		authenticatedUser := &app.AuthenticatedUser{

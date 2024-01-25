@@ -8,31 +8,25 @@ import (
 )
 
 type AuthServiceParams struct {
-	UserRepository   AuthUserRepository
-	AuthTokenRepo    AuthTokenRepository
-	PasswordManager  PasswordManager
-	AuthTokenManager AuthTokenManager
-	SessionStore     SessionStore
-	Validator        services.Validator
+	UserRepository  AuthUserRepository
+	PasswordManager PasswordManager
+	SessionStore    SessionStore
+	Validator       services.Validator
 }
 
 type authService struct {
-	userRepo         AuthUserRepository
-	authTokenRepo    AuthTokenRepository
-	passwordManager  PasswordManager
-	authTokenManager AuthTokenManager
-	sessionStore     SessionStore
-	validator        services.Validator
+	userRepo        AuthUserRepository
+	passwordManager PasswordManager
+	sessionStore    SessionStore
+	validator       services.Validator
 }
 
 func NewAuthService(params AuthServiceParams) *authService {
 	return &authService{
-		userRepo:         params.UserRepository,
-		authTokenRepo:    params.AuthTokenRepo,
-		passwordManager:  params.PasswordManager,
-		authTokenManager: params.AuthTokenManager,
-		sessionStore:     params.SessionStore,
-		validator:        params.Validator,
+		userRepo:        params.UserRepository,
+		passwordManager: params.PasswordManager,
+		sessionStore:    params.SessionStore,
+		validator:       params.Validator,
 	}
 }
 
@@ -93,25 +87,13 @@ func (as *authService) Login(r *http.Request, w http.ResponseWriter, i LoginInpu
 		return fmt.Errorf("Login: %w", err)
 	}
 
-	// Generate a new token
-	token := as.authTokenManager.GenerateToken()
-
-	// Put the token in the session
-	as.authTokenManager.AddTokenToSession(session, token)
-
-	// Save token in the database
-	err = as.authTokenRepo.InsertToken(&domain.AuthToken{
-		Token:  token.String(),
-		UserID: user.ID,
-	})
-	if err != nil {
-		return fmt.Errorf("Login: %w", err)
-	}
+	// Add the user ID to the session
+	session.Values[SESSION_USER_ID_FIELD] = user.ID
 
 	// Save the session
 	err = as.sessionStore.Save(r, w, session)
 	if err != nil {
-		return fmt.Errorf("Login: %w", err)
+		return fmt.Errorf("Login: error saving the session: %w", err)
 	}
 
 	return nil
@@ -120,20 +102,15 @@ func (as *authService) Login(r *http.Request, w http.ResponseWriter, i LoginInpu
 func (as *authService) Logout(r *http.Request, w http.ResponseWriter) error {
 	session, err := as.sessionStore.Get(r, SESSION_NAME)
 	if err != nil {
-		return err
+		return fmt.Errorf("Logout: error getting session from store %w", err)
 	}
 
-	token, err := as.authTokenManager.ExtractTokenFromSession(session)
+	err = as.sessionStore.Delete(r, w, session)
 	if err != nil {
-		return err
+		return fmt.Errorf("Logout: error deleting session from store %w", err)
 	}
 
-	err = as.authTokenRepo.DeleteToken(token.String())
-	if err != nil {
-		return err
-	}
-
-	return as.sessionStore.Delete(r, w, session)
+	return nil
 }
 
 func (as *authService) ValidateRegisterEmail(i ValidateRegisterEmailInput) (ValidateRegisterEmailOutput, error) {
