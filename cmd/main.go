@@ -60,6 +60,7 @@ func main() {
 		SessionStore: sessionStore,
 		UserRepo:     userRepository,
 	}
+	csrfMiddleware := middlewares.CSRFMiddleware{}
 	flashMiddleware := middlewares.FlashMiddleware{
 		FlashStore: flashStore,
 	}
@@ -71,6 +72,7 @@ func main() {
 	// Middlewares
 	ec.Use(appContextMiddleware.WithAppContextMiddleware)
 	ec.Use(authMiddleware.WithUserMiddleware)
+	ec.Use(csrfMiddleware.WithCSRFMiddleware)
 	ec.Use(flashMiddleware.WithFlashMiddleWare)
 
 	ec.Use(func(hf echo.HandlerFunc) echo.HandlerFunc {

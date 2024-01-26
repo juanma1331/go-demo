@@ -7,6 +7,7 @@ import (
 	"go-demo/views/authview"
 	"go-demo/views/components"
 
+	"github.com/gorilla/csrf"
 	"github.com/labstack/echo"
 )
 
@@ -31,8 +32,11 @@ func NewAuthHandler(as authservice.AuthService, fs app.FlashStore) *authHandler 
 func (uh *authHandler) HandleShowLogin(c echo.Context) error {
 	cc := c.(app.AppContext)
 
+	csrfToken := csrf.Token(cc.Request())
+
 	viewModel := authview.LoginPageViewModel{
 		HasInvalidCredentials: false,
+		CSRFToken:             csrfToken,
 	}
 
 	return cc.RenderComponent(authview.LoginPage(viewModel))
@@ -55,6 +59,7 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 			return cc.RenderComponent(authview.LoginPage(viewModel))
 		}
 
+		return err
 	}
 
 	app.NewFlashMessage("You have been logged in successfully", "success").
@@ -65,7 +70,12 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 
 func (uh *authHandler) HandleShowRegister(c echo.Context) error {
 	cc := c.(app.AppContext)
-	return cc.RenderComponent(authview.RegisterPage(authview.RegisterPageViewModel{}))
+
+	csrfToken := csrf.Token(cc.Request())
+
+	return cc.RenderComponent(authview.RegisterPage(authview.RegisterPageViewModel{
+		CSRFToken: csrfToken,
+	}))
 }
 
 func (uh *authHandler) HandleRegister(c echo.Context) error {
