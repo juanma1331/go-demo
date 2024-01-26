@@ -8,6 +8,11 @@ import (
 	"fmt"
 )
 
+type CartProduct struct {
+	Product  domain.Product
+	Quantity int
+}
+
 templ IndexPage() {
 	@layoutview.Base() {
 		@shared.Toast()
@@ -71,9 +76,9 @@ templ ProductList(products []domain.Product) {
 	}
 }
 
-templ Cart(cartID string, products []domain.Product) {
+templ Cart(cartID string, products []CartProduct) {
 	for _, p := range products {
-		@CartProduct(p)
+		@CartProductItem(p)
 	}
 	if len(products) == 0 {
 		<li>
@@ -89,15 +94,8 @@ templ Cart(cartID string, products []domain.Product) {
 	}
 }
 
-templ JustAddedProduct(p domain.Product, quantity int) {
-	<li>
-		<h2>{ p.Name }</h2>
-		<p>{ p.Description }</p>
-		<p>Quantity: 2</p>
-	</li>
-}
-
-templ CartProduct(p domain.Product) {
-	<h2>{ p.Name }</h2>
-	<p>{ p.Description }</p>
+templ CartProductItem(p CartProduct) {
+	<h2>{ p.Product.Name }</h2>
+	<p>{ p.Product.Description }</p>
+	<p>{ "Quantity:  " }{ fmt.Sprintf("%d", p.Quantity) }</p>
 }

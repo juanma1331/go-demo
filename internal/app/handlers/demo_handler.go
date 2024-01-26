@@ -51,8 +51,6 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 		return fmt.Errorf("HandleGetCart: error getting cart: %w", err)
 	}
 
-	fmt.Printf("Cart: %v\n", carts)
-
 	if len(carts) == 0 {
 		cart := domain.Cart{
 			ID:     uuid.New(),
@@ -65,23 +63,24 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 			return err
 		}
 
-		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []domain.Product{}))
+		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []demoview.CartProduct{}))
 	}
 
 	cart := carts[0]
 
 	if len(cart.CartDetails) == 0 {
-		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []domain.Product{}))
+		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []demoview.CartProduct{}))
 	}
 
-	products := make([]domain.Product, 0, len(cart.CartDetails))
+	cartProducts := make([]demoview.CartProduct, 0, len(cart.CartDetails))
 	for _, cartDetail := range cart.CartDetails {
-		products = append(products, *cartDetail.Product)
+		cartProducts = append(cartProducts, demoview.CartProduct{
+			Product:  *(cartDetail.Product),
+			Quantity: cartDetail.Quantity,
+		})
 	}
 
-	fmt.Printf("cart is: %v\n", cart)
-
-	return cc.RenderComponent(demoview.Cart(cart.ID.String(), products))
+	return cc.RenderComponent(demoview.Cart(cart.ID.String(), cartProducts))
 }
 
 func (h *productHandler) HandleAddToCart(c echo.Context) error {
@@ -160,7 +159,10 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 		return err
 	}
 
-	return cc.RenderComponent(demoview.CartProduct(product))
+	return cc.RenderComponent(demoview.CartProductItem(demoview.CartProduct{
+		Product:  product,
+		Quantity: cartDetail.Quantity,
+	}))
 }
 
 func (uh *productHandler) HandleProductImage(c echo.Context) error {

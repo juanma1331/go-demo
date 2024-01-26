@@ -18,8 +18,16 @@ func OpenDB(dsn string) (*bun.DB, error) {
 		return nil, err
 	}
 
+	// Set connection pool settings
+	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(time.Hour)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	// Set WAL journal mode
+	_, err = db.Exec("PRAGMA journal_mode = WAL")
+	if err != nil {
+		return nil, err
+	}
 
 	bunDB := bun.NewDB(db, sqlitedialect.New())
 
