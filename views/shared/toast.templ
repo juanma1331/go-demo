@@ -1,10 +1,18 @@
 package shared
 
-const NOTIFY_TRIGGER_NAME = "notify"
-
 script initToast() {
     const delay = 3000
     const toaster = document.querySelector('[data-toaster]')
+    const eventHub = document.querySelector('[data-event-hub]')
+
+    if (!eventHub) {
+        throw new Error('No event hub found')
+    }
+
+      if (!toaster) {
+        throw new Error('No toaster found')
+    }
+
 
     /**
     * @param {string} message
@@ -13,18 +21,36 @@ script initToast() {
     */
     const createToast = (message, type) => {
         const toast = document.createElement('div')
-        toast.classList.add('toast')
-        toast.classList.add(type)
+        toast.classList.add(
+        'bg-slate-50', 
+        'text-slate-900', 
+        'p-4', 'rounded', 
+        'shadow-md', 
+        'mb-4', 
+        'text-sm',
+        'font-medium', 
+        'tracking-wide',
+        'outline',
+        'outline-1'
+        )
+        
+        if (type === 'success') {
+            toast.classList.add("outline-green-500")
+        } else if (type === 'error') {
+            toast.classList.add('outline-red-500')
+        } else if (type === 'warning') {
+            toast.classList.add('outline-yellow-500')
+        } else if (type === 'info') {
+            toast.classList.add('outline-blue-500')
+        } else {
+            throw new Error('Invalid type provided')
+        }
+
         toast.innerText = message
         return toast
     }
 
     const notify = (event) => {
-        // The app use hx-boost to update the DOM, so we need to check if the toaster is still in the DOM
-        if (!document.body.contains(toaster)) {
-            document.removeEventListener('notify', notify)
-        }
-
         /**
         * @type {{message: string, type: string}}
         */
@@ -47,16 +73,11 @@ script initToast() {
         }, delay)
     }
 
-
-    if (!toaster) {
-        throw new Error('No toaster found')
-    }
-
-    document.addEventListener('notify', notify)
+    eventHub.addEventListener('notify', notify)
     
 }
 
 templ Toast() {
-	<div data-toaster class="transparent"></div>
+	<div data-toaster class="absolute right-24 top-24"></div>
 	@initToast()
 }

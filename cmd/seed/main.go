@@ -10,13 +10,20 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 const NUMBER_OF_PRODUCTS = 3
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
 	fmt.Println("Starting seeding...")
-	db, err := infra.OpenDB(infra.DSN)
+
+	db, err := infra.OpenDB()
 	if err != nil {
 		panic(err)
 	}

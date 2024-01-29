@@ -21,7 +21,7 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 
 		session, err := am.SessionStore.Get(c.Request(), authservice.SESSION_NAME)
 		if err != nil {
-			cc.Error(echo.NewHTTPError(500, fmt.Errorf("LoadUserMiddleware: Failed to get session: %w", err)))
+			cc.Error(echo.NewHTTPError(500, fmt.Errorf("WithUserMiddleware: Failed to get session: %w", err)))
 			return next(cc)
 		}
 
@@ -40,7 +40,7 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 				return next(cc)
 			}
 
-			c.Error(echo.NewHTTPError(500, fmt.Errorf("LoadUserMiddleware: Failed to select user: %w", err)))
+			c.Error(echo.NewHTTPError(500, fmt.Errorf("WithUserMiddleware: Failed to select user: %w", err)))
 
 			return next(cc)
 		}

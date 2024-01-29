@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"go-demo/internal/domain"
 	"go-demo/internal/infra"
 
+	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
 )
 
@@ -33,7 +35,12 @@ func CreateTables(db *bun.DB, ctx context.Context) error {
 }
 
 func main() {
-	db, err := infra.OpenDB(infra.DSN)
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	db, err := infra.OpenDB()
 
 	if err != nil {
 		panic(err)

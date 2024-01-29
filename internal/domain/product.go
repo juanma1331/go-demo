@@ -14,8 +14,8 @@ type Product struct {
 	Name        string    `bun:"name,notnull"`
 	Description string    `bun:"description,notnull"`
 	Price       int64     `bun:"price,notnull"`
-	ImageSmall  []byte    `bun:"type:blob,notnull"`
-	ImageMedium []byte    `bun:"type:blob,notnull"`
+	ImageSmall  []byte    `bun:"type:bytea,notnull"`
+	ImageMedium []byte    `bun:"type:bytea,notnull"`
 	CreatedAt   time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 	UpdatedAt   time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 }

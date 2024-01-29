@@ -6,17 +6,23 @@ import (
 	"go-demo/internal/domain"
 
 	"fmt"
+	"go-demo/internal/app/middlewares"
 )
 
-type CartProduct struct {
-	Product  domain.Product
-	Quantity int
+type CartProductViewModel struct {
+	DetailId           string
+	ProductName        string
+	ProductDescription string
+	Quantity           int
+}
+
+css htmxIndicator() {
 }
 
 templ IndexPage() {
 	@layoutview.Base() {
 		@shared.Toast()
-		<main class="container max-w-4xl mx-auto grid grid-cols-4">
+		<main class="container max-w-7xl mx-auto grid grid-cols-4 gap-4">
 			<section class="col-span-3">
 				<h1>Products</h1>
 				<ul
@@ -24,9 +30,10 @@ templ IndexPage() {
 					hx-trigger="load"
 					hx-target="this"
 					hx-indicator="#indicator"
+					class="grid grid-cols-3 gap-4"
 				>
 					<div id="indicator">
-						Loading products...
+						Loading products... 
 					</div>
 				</ul>
 			</section>
@@ -48,54 +55,50 @@ templ IndexPage() {
 	}
 }
 
-templ ProductList(products []domain.Product) {
+templ ProductList(products []domain.Product, token string) {
 	for _, p := range products {
 		<li>
-			<h2>{ p.Name }</h2>
-			<p>{ p.Description }</p>
-			<img
-				src={ fmt.Sprintf("/products/%s/image/medium", p.ID.String()) }
-				alt="the product image"
-				class="rounded-md object-cover h-48 w-96"
-			/>
-			<form
-				hx-put="/cart"
-				hx-indicator="#indicator"
-				hx-target="#cart"
-				hx-swap="beforeend"
-			>
-				<input type="hidden" name="product_id" value={ p.ID.String() }/>
-				<button
-					type="submit"
-					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+			<div class="p-2 border border-slate-300 space-y-2">
+				<h2>{ p.Name }</h2>
+				<img
+					src={ fmt.Sprintf("/products/%s/image/medium", p.ID.String()) }
+					alt="the product image"
+					class="rounded-md object-cover h-48 w-96"
+				/>
+				<p class="text-sm text-slate-600">{ p.Description }</p>
+				<form
+					hx-put="/cart"
+					hx-target="#cart"
+					hx-swap="beforeend"
+					hx-indicator={ fmt.Sprintf("#indicator-%s", p.ID.String()) }
 				>
-					Add to cart
-				</button>
-			</form>
+					<input type="hidden" name={ middlewares.CSRFTokenKey } value={ token }/>
+					<input type="hidden" name="product_id" value={ p.ID.String() }/>
+					<div class="flex items-center justify-end">
+						<button
+							type="submit"
+							class="ml-auto bg-slate-500 hover:bg-slate-700 text-slate-50 font-semibold text-sm py-2 px-4 rounded flex items-center gap-2"
+						>
+							Add to cart
+							<img src="/static/icons/spinner.svg" id={ fmt.Sprintf("indicator-%s", p.ID.String()) } class="my-indicator"/>
+						</button>
+					</div>
+				</form>
+			</div>
 		</li>
 	}
 }
 
-templ Cart(cartID string, products []CartProduct) {
-	for _, p := range products {
-		@CartProductItem(p)
-	}
-	if len(products) == 0 {
-		<li>
-			Your cart is empty
-		</li>
-	} else {
-		<form hx-post="/checkout">
-			<input type="hidden" value={ cartID }/>
-			<button type="submit">
-				Checkout
-			</button>
-		</form>
+templ Cart(cartID string, models []CartProductViewModel) {
+	for _, m := range models {
+		@CartProduct(m)
 	}
 }
 
-templ CartProductItem(p CartProduct) {
-	<h2>{ p.Product.Name }</h2>
-	<p>{ p.Product.Description }</p>
-	<p>{ "Quantity:  " }{ fmt.Sprintf("%d", p.Quantity) }</p>
+templ CartProduct(m CartProductViewModel) {
+	<li id={ m.DetailId } class="border border-slate-300 p-2">
+		<h2>{ m.ProductName }</h2>
+		<p>{ m.ProductDescription }</p>
+		<p>{ "Quantity:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
+	</li>
 }

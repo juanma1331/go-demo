@@ -12,11 +12,11 @@
 
 .vscode/
 
-# Ignore only the content of /data not the directory itself
-/data/*
 
 # Ignore output.css
 /assets/css/output.css
 
 # Ignore all compiled templates
 *_templ.go
+
+.env

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"go-demo/internal/app"
 	"go-demo/internal/app/services/authservice"
 	"go-demo/views/authview"
@@ -51,6 +52,7 @@ func (uh *authHandler) HandleLogin(c echo.Context) error {
 	}
 
 	if err := uh.authService.Login(cc.Request(), cc.Response(), input); err != nil {
+		fmt.Println(err)
 		if errors.Is(err, authservice.ErrInvalidCredentials) {
 			viewModel := authview.LoginPageViewModel{
 				HasInvalidCredentials: true,

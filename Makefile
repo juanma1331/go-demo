@@ -53,7 +53,7 @@ seed-db:
 
 .PHONY: delete-db
 delete-db:
-	@del .\data\data.sqlite
+	@go run ./cmd/delete-db/main.go
 
 
 .PHONY: reset-db

@@ -10,28 +10,44 @@ import (
 	auth_validation "go-demo/internal/app/services/authservice/validation"
 	"go-demo/internal/infra"
 	"go-demo/internal/infra/repositories"
+	"os"
+	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	dsn := os.Getenv("DATABASE_URL")
+
 	ec := echo.New()
 
 	// Add static files support
 	ec.Static("/static", "assets")
 
 	// Dependencies
-	dbInstance, err := infra.OpenDB(infra.DSN)
+	dbInstance, err := infra.OpenDB()
 	if err != nil {
+		fmt.Println("Error opening DB")
 		panic(err)
 	}
 
-	sessionStore, err := infra.NewBunSessionStore(dbInstance, []byte("session-secret-key"))
+	sessionStore, err := infra.NewSessionStore(dsn)
 	if err != nil {
+		fmt.Println("Error creating session store")
 		panic(err)
 	}
+	defer sessionStore.Close()
+
+	// Run a background goroutine to clean up expired sessions from the database.
+	defer sessionStore.StopCleanup(sessionStore.Cleanup(time.Minute * 5))
 
 	flashStore := app.NewFlashStore("flash-secret-key")
 
@@ -87,6 +103,8 @@ func main() {
 	ec.Use(middleware.Gzip())
 	ec.Use(middleware.Recover())
 
+	ec.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
+
 	// Demo routes
 	ec.GET("/", demoHandler.HandleProductIndex, authMiddleware.WithAuthenticationRequiredMiddleware)
 	ec.GET("/cart", demoHandler.HandleGetCart, authMiddleware.WithAuthenticationRequiredMiddleware)
@@ -104,8 +122,6 @@ func main() {
 	ag.GET("/login", authHandler.HandleShowLogin)
 	ag.POST("/login", authHandler.HandleLogin)
 	ag.GET("/logout", authHandler.HandleLogout)
-
-	ec.HTTPErrorHandler = handlers.CustomHTTPErrorHandler
 
 	ec.Start(":8080")
 	fmt.Println("Server running on port 8080")
