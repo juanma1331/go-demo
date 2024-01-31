@@ -109,9 +109,10 @@ func main() {
 	ec.GET("/", demoHandler.HandleProductIndex, authMiddleware.WithAuthenticationRequiredMiddleware)
 	ec.GET("/cart", demoHandler.HandleGetCart, authMiddleware.WithAuthenticationRequiredMiddleware)
 	ec.PUT("/cart", demoHandler.HandleAddToCart, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.PATCH("/cart", demoHandler.HandleDecreaseQuantity, authMiddleware.WithAuthenticationRequiredMiddleware)
+	ec.POST("/cart/delete", demoHandler.HandleRemoveFromCart, authMiddleware.WithAuthenticationRequiredMiddleware)
 	ec.GET("/products", demoHandler.GetProductList, authMiddleware.WithAuthenticationRequiredMiddleware)
 	ec.GET("/products/:id/image/:size", demoHandler.HandleProductImage, authMiddleware.WithAuthenticationRequiredMiddleware)
-
 	// Auth routes
 	ag := ec.Group("/auth")
 	ag.GET("/register", authHandler.HandleShowRegister)

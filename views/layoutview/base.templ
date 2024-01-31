@@ -12,22 +12,10 @@ templ Base() {
 			<link rel="stylesheet" href="/static/css/output.css"/>
 			<script src="/static/js/hmtx.min.js"></script>
 		</head>
-		<style type="text/css">
-
-		.my-indicator {
-			display: none;
-		}
-
-		.htmx-request.my-indicator {
-			opacity: 0.5;
-			display: block;
-		}
-		
-		</style>
 		<body hx-boost="true" class="bg-slate-50">
 			<div data-event-hub>
-				<header class="h-14 bg-slate-300">
-					<div class="container max-w-4xl mx-auto flex justify-between items-center h-full">
+				<header class="h-14 bg-slate-300 mb-12">
+					<div class="container max-w-7xl mx-auto flex justify-between items-center h-full">
 						<nav>
 							<a href="/">Products</a>
 							if views.HasAuthenticatedUser(ctx) {
@@ -38,11 +26,13 @@ templ Base() {
 								<a href="/auth/register">Register</a>
 							}
 						</nav>
-						@CartCount()
-						<div>
-							if views.HasAuthenticatedUser(ctx) {
-								<span>Logged in</span>
-							}
+						<div class="flex items-center gap-4">
+							@CartCount()
+							<div>
+								if views.HasAuthenticatedUser(ctx) {
+									<span>Logged in</span>
+								}
+							</div>
 						</div>
 					</div>
 				</header>
@@ -70,8 +60,14 @@ script initCartCount() {
 }
 
 templ CartCount() {
-	<div data-cart-count>
-		0
+	<div class="flex items-center gap-2 bg-slate-200 py-1 px-2 rounded-md shadow-md">
+		<div
+			data-cart-count
+			class="text-sm font-semibold text-slate-900"
+		>
+			0
+		</div>
+		<img src="/static/icons/cart.svg" alt="an image of a shop cart"/>
 	</div>
 	@initCartCount()
 }

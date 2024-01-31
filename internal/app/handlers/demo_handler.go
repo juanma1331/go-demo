@@ -13,22 +13,22 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type productHandler struct {
+type demoHandler struct {
 	db *bun.DB
 }
 
-func NewDemoHandler(db *bun.DB) *productHandler {
-	return &productHandler{
+func NewDemoHandler(db *bun.DB) *demoHandler {
+	return &demoHandler{
 		db: db,
 	}
 }
 
-func (h *productHandler) HandleProductIndex(c echo.Context) error {
+func (h *demoHandler) HandleProductIndex(c echo.Context) error {
 	cc := c.(app.AppContext)
 	return cc.RenderComponent(demoview.IndexPage())
 }
 
-func (h *productHandler) GetProductList(c echo.Context) error {
+func (h *demoHandler) GetProductList(c echo.Context) error {
 	cc := c.(app.AppContext)
 
 	products := []domain.Product{}
@@ -39,7 +39,7 @@ func (h *productHandler) GetProductList(c echo.Context) error {
 	return cc.RenderComponent(demoview.ProductList(products, csrfToken))
 }
 
-func (h *productHandler) HandleGetCart(c echo.Context) error {
+func (h *demoHandler) HandleGetCart(c echo.Context) error {
 	cc := c.(app.AppContext)
 
 	carts := []domain.Cart{}
@@ -51,6 +51,8 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 	if err != nil {
 		return fmt.Errorf("HandleGetCart: error getting cart: %w", err)
 	}
+
+	token := csrf.Token(cc.Request())
 
 	if len(carts) == 0 {
 		cart := domain.Cart{
@@ -64,13 +66,13 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 			return err
 		}
 
-		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []demoview.CartProductViewModel{}))
+		return cc.RenderComponent(demoview.Cart([]demoview.CartProductViewModel{}, token))
 	}
 
 	cart := carts[0]
 
 	if len(cart.CartDetails) == 0 {
-		return cc.RenderComponent(demoview.Cart(cart.ID.String(), []demoview.CartProductViewModel{}))
+		return cc.RenderComponent(demoview.Cart([]demoview.CartProductViewModel{}, token))
 	}
 
 	cartProducts := make([]demoview.CartProductViewModel, 0, len(cart.CartDetails))
@@ -97,12 +99,13 @@ func (h *productHandler) HandleGetCart(c echo.Context) error {
 		return fmt.Errorf("HandleGetCart: error setting htmx trigger: %w", err)
 	}
 
-	return cc.RenderComponent(demoview.Cart(cart.ID.String(), cartProducts))
+	return cc.RenderComponent(demoview.Cart(cartProducts, token))
 }
 
-func (h *productHandler) HandleAddToCart(c echo.Context) error {
+func (h *demoHandler) HandleAddToCart(c echo.Context) error {
 	cc := c.(app.AppContext)
 	productId := c.FormValue("product_id")
+	token := csrf.Token(cc.Request())
 
 	product, err := h.getProduct(productId, cc)
 	if err != nil {
@@ -120,8 +123,8 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 	}
 
 	if cartDetail.Quantity > 1 {
-		// If the product was already in the cart, we need to update the quantity on the client
-		app.SetHtmxRetarget(cc.Response().Writer, fmt.Sprintf("[id='%s']", cartDetail.ID.String()))
+		// If the product was already in the cart, we need to update the quantity on the client cart
+		app.SetHtmxRetarget(cc.Response().Writer, fmt.Sprintf("#cart-item-%s", cartDetail.ID.String()))
 
 		app.SetHtmxReswap(cc.Response().Writer, "outerHTML")
 	}
@@ -153,10 +156,10 @@ func (h *productHandler) HandleAddToCart(c echo.Context) error {
 		ProductName:        product.Name,
 		ProductDescription: product.Description,
 		Quantity:           cartDetail.Quantity,
-	}))
+	}, token))
 }
 
-func (h *productHandler) getProduct(productId string, cc app.AppContext) (domain.Product, error) {
+func (h *demoHandler) getProduct(productId string, cc app.AppContext) (domain.Product, error) {
 	var product domain.Product
 	err := h.db.
 		NewSelect().
@@ -169,12 +172,12 @@ func (h *productHandler) getProduct(productId string, cc app.AppContext) (domain
 	return product, nil
 }
 
-func (h *productHandler) getActiveCart(userId string, cc app.AppContext) (domain.Cart, error) {
+func (h *demoHandler) getActiveCart(userId string, cc app.AppContext) (domain.Cart, error) {
 	var cart domain.Cart
 	err := h.db.
 		NewSelect().
 		Model(&cart).
-		Relation("CartDetails").
+		Relation("CartDetails.Product").
 		Where("user_id = ? AND status = ?", userId, domain.CART_STATUS_ACTIVE).
 		Scan(cc.Request().Context())
 
@@ -184,7 +187,7 @@ func (h *productHandler) getActiveCart(userId string, cc app.AppContext) (domain
 	return cart, nil
 }
 
-func (h *productHandler) updateOrInsertProductInCart(cart *domain.Cart, product domain.Product, cc app.AppContext) (domain.CartDetail, error) {
+func (h *demoHandler) updateOrInsertProductInCart(cart *domain.Cart, product domain.Product, cc app.AppContext) (domain.CartDetail, error) {
 	var cartDetail domain.CartDetail
 	productInCart := false
 
@@ -230,7 +233,142 @@ func calculateTotalQuantity(cartDetails []domain.CartDetail) int {
 	return total
 }
 
-func (uh *productHandler) HandleProductImage(c echo.Context) error {
+func (h *demoHandler) HandleDecreaseQuantity(c echo.Context) error {
+	cc := c.(app.AppContext)
+	cartDetailId := c.FormValue("cart_detail_id")
+	token := csrf.Token(cc.Request())
+
+	// Get user's active cart
+	cart, err := h.getActiveCart(cc.User.ID.String(), cc)
+	if err != nil {
+		return fmt.Errorf("HandleDecreaseQuantity: error getting active cart: %w", err)
+	}
+
+	// Get cart detail
+	var cartDetailIndex int
+	for i, cd := range cart.CartDetails {
+		if cd.ID.String() == cartDetailId {
+			cartDetailIndex = i
+			break
+		}
+	}
+
+	cartDetail := &cart.CartDetails[cartDetailIndex]
+
+	if cartDetail.ID == uuid.Nil {
+		return fmt.Errorf("HandleDecreaseQuantity: cart detail not found")
+	}
+
+	if cartDetail.Quantity == 1 {
+		return fmt.Errorf("HandleDecreaseQuantity: cart detail quantity is already 1")
+	}
+
+	// Decrease quantity
+	cartDetail.Quantity--
+
+	_, err = h.db.NewUpdate().
+		Model(cartDetail).
+		Where("id = ?", cartDetail.ID).
+		Column("quantity").
+		Exec(cc.Request().Context())
+	if err != nil {
+		return fmt.Errorf("HandleDecreaseQuantity: error updating cart detail: %w", err)
+	}
+
+	// Notifying the client that the cart was updated
+	notifyTrigger := app.HtmxTrigger{
+		Name: "notify",
+		Value: map[string]string{
+			"message": fmt.Sprintf("Product with id=%s has been removed", cartDetail.ProductID.String()),
+			"type":    "success",
+		},
+	}
+
+	cartUpdatedTrigger := app.HtmxTrigger{
+		Name: "cart-updated",
+		Value: map[string]string{
+			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
+		},
+	}
+
+	fmt.Printf("total quantity: %d\n", calculateTotalQuantity(cart.CartDetails))
+
+	err = app.SetHtmxTriggers(cc.Response().Writer, notifyTrigger, cartUpdatedTrigger)
+	if err != nil {
+		return fmt.Errorf("HandleDecreaseQuantity: error setting htmx triggers: %w", err)
+	}
+
+	return cc.RenderComponent(demoview.CartProduct(demoview.CartProductViewModel{
+		DetailId:           cartDetail.ID.String(),
+		ProductName:        cartDetail.Product.Name,
+		ProductDescription: cartDetail.Product.Description,
+		Quantity:           cartDetail.Quantity,
+	}, token))
+}
+
+func (h *demoHandler) HandleRemoveFromCart(c echo.Context) error {
+	cc := c.(app.AppContext)
+	cartDetailId := c.FormValue("cart_detail_id")
+
+	// Get user's active cart
+	cart, err := h.getActiveCart(cc.User.ID.String(), cc)
+	if err != nil {
+		return fmt.Errorf("HandleRemoveFromCart: error getting active cart: %w", err)
+	}
+
+	fmt.Printf("cart id: %s\n", cartDetailId)
+
+	// Get cart detail
+	var cartDetail domain.CartDetail
+	for _, cd := range cart.CartDetails {
+		if cd.ID.String() == cartDetailId {
+			cartDetail = cd
+			break
+		}
+	}
+
+	if cartDetail.ID == uuid.Nil {
+		return fmt.Errorf("HandleRemoveFromCart: cart detail not found")
+	}
+
+	if cartDetail.Quantity > 1 {
+		return fmt.Errorf("HandleRemoveFromCart: cart detail quantity is more than 1")
+	}
+
+	// Remove cart detail
+	_, err = h.db.NewDelete().
+		Model(&cartDetail).
+		Where("id = ?", cartDetail.ID).
+		Exec(cc.Request().Context())
+	if err != nil {
+		return fmt.Errorf("HandleRemoveFromCart: error deleting cart detail: %w", err)
+	}
+
+	// Notifying the client that the cart was updated
+	notifyTrigger := app.HtmxTrigger{
+		Name: "notify",
+		Value: map[string]string{
+			"message": fmt.Sprintf("Product with id=%s has been removed", cartDetail.ProductID.String()),
+			"type":    "success",
+		},
+	}
+
+	cartUpdatedTrigger := app.HtmxTrigger{
+		Name: "cart-updated",
+		Value: map[string]string{
+			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)-1),
+		},
+	}
+
+	err = app.SetHtmxTriggers(cc.Response().Writer, notifyTrigger, cartUpdatedTrigger)
+	if err != nil {
+		return fmt.Errorf("HandleRemoveFromCart: error setting htmx triggers: %w", err)
+	}
+
+	return cc.NoContent(http.StatusOK)
+}
+
+func (uh *demoHandler) HandleProductImage(c echo.Context) error {
 	productId := c.Param("id")
 	imageSize := c.Param("size")
 
