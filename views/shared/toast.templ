@@ -1,14 +1,10 @@
 package shared
 
-script initToast() {
+script InitToastEvents() {
     const delay = 3000
     const toaster = document.querySelector('[data-toaster]')
-    const eventHub = document.querySelector('[data-event-hub]')
 
-    if (!eventHub) {
-        throw new Error('No event hub found')
-    }
-
+  
       if (!toaster) {
         throw new Error('No toaster found')
     }
@@ -73,11 +69,10 @@ script initToast() {
         }, delay)
     }
 
-    eventHub.addEventListener('notify', notify)
+    document.addEventListener('notify', notify)
     
 }
 
 templ Toast() {
 	<div data-toaster class="absolute right-24 top-24"></div>
-	@initToast()
 }

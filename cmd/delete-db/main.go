@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go-demo/internal/infra"
+	"go-demo/internal/shared"
 
 	"github.com/joho/godotenv"
 )
@@ -13,7 +13,7 @@ func main() {
 		fmt.Println("Error loading .env file")
 	}
 
-	db, err := infra.OpenDB()
+	db, err := shared.OpenDB()
 
 	db.Exec("DROP TABLE IF EXISTS users;")
 	db.Exec("DROP TABLE IF EXISTS products;")

@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"go-demo/internal/app"
-	"go-demo/internal/domain"
-	"go-demo/internal/infra"
+	auth_domain "go-demo/internal/auth/domain"
+	auth_infra "go-demo/internal/auth/infra"
+	ecommerce_domain "go-demo/internal/ecommerce/domain"
+	"go-demo/internal/shared"
 	"os"
 	"time"
 
@@ -23,7 +24,7 @@ func main() {
 
 	fmt.Println("Starting seeding...")
 
-	db, err := infra.OpenDB()
+	db, err := shared.OpenDB()
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +49,7 @@ func main() {
 	fmt.Printf("Seeding finished in %s\n", migrationEnd)
 }
 
-func createProducts() []domain.Product {
+func createProducts() []ecommerce_domain.Product {
 	images := []string{
 		"./cmd/seed/images/1.jpg",
 		"./cmd/seed/images/2.jpg",
@@ -56,7 +57,7 @@ func createProducts() []domain.Product {
 		"./cmd/seed/images/4.jpg",
 	}
 
-	var products []domain.Product
+	var products []ecommerce_domain.Product
 
 	for i := 0; i < NUMBER_OF_PRODUCTS; i++ {
 		image := images[i%len(images)]
@@ -65,17 +66,17 @@ func createProducts() []domain.Product {
 			panic(err)
 		}
 
-		smallImage, err := app.ResizeImage(img, 200, 200)
+		smallImage, err := shared.ResizeImage(img, 200, 200)
 		if err != nil {
 			panic(fmt.Errorf("createProduct: failed to resize small image: %w", err))
 		}
 
-		mediumImage, err := app.ResizeImage(img, 384, 192)
+		mediumImage, err := shared.ResizeImage(img, 384, 192)
 		if err != nil {
 			panic(fmt.Errorf("createProduct: failed to resize medium image: %w", err))
 		}
 
-		products = append(products, domain.Product{
+		products = append(products, ecommerce_domain.Product{
 			ID:          uuid.New(),
 			Name:        fmt.Sprintf("Product %d", i+1),
 			Description: fmt.Sprintf("Product %d description", i+1),
@@ -87,13 +88,13 @@ func createProducts() []domain.Product {
 	return products
 }
 
-func createAdmin() *domain.User {
-	password, err := infra.NewBCryptPasswordManager().GenerateFromPassword("147")
+func createAdmin() *auth_domain.User {
+	password, err := auth_infra.NewBCryptPasswordManager().GenerateFromPassword("147")
 	if err != nil {
 		panic(err)
 	}
 
-	return &domain.User{
+	return &auth_domain.User{
 		ID:       uuid.New(),
 		Email:    "john-doe@mail.com",
 		Password: string(password),

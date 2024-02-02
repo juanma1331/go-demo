@@ -2,11 +2,11 @@ package views
 
 import (
 	"context"
-	"go-demo/internal/app"
+	"go-demo/internal/shared"
 )
 
 func HasAuthenticatedUser(ctx context.Context) bool {
-	user, ok := ctx.Value(app.ContextUserKey).(*app.AuthenticatedUser)
+	user, ok := ctx.Value(shared.ContextUserKey).(*shared.AuthenticatedUser)
 	if !ok {
 		return false
 	}
@@ -14,8 +14,8 @@ func HasAuthenticatedUser(ctx context.Context) bool {
 	return user != nil
 }
 
-func GetFlash(ctx context.Context) *[]app.FlashMessage {
-	flash, ok := ctx.Value(app.ContextFlashKey).(*[]app.FlashMessage)
+func GetFlash(ctx context.Context) *[]shared.FlashMessage {
+	flash, ok := ctx.Value(shared.ContextFlashKey).(*[]shared.FlashMessage)
 	if !ok {
 		return nil
 	}

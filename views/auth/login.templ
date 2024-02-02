@@ -1,0 +1,34 @@
+package auth
+
+import (
+	"go-demo/views/layouts"
+	"go-demo/internal/shared"
+)
+
+type LoginPageViewModel struct {
+	HasInvalidCredentials bool
+	CSRFToken             string
+}
+
+templ LoginPage(m LoginPageViewModel) {
+	@layouts.Base() {
+		<main>
+			<h1 class="text-red-400 text-center">Login</h1>
+			<form action="/auth/login" method="post">
+				if m.HasInvalidCredentials {
+					<p class="text-red-400 text-center">Invalid credentials</p>
+				}
+				<input type="hidden" name={ shared.CSRFTokenKey } value={ m.CSRFToken }/>
+				<div class="flex flex-col">
+					<label for="email">Email</label>
+					<input type="email" name="email" id="email"/>
+				</div>
+				<div class="flex flex-col">
+					<label for="password">Password</label>
+					<input type="password" name="password" id="password"/>
+				</div>
+				<button type="submit">Login</button>
+			</form>
+		</main>
+	}
+}
