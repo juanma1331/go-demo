@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
-	"go-demo/views/ecommerce"
+	"go-demo/views/layouts"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
@@ -69,7 +69,7 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 	}
 
 	// If the product was not in the cart, we need to add it to the cart
-	return cc.RenderComponent(ecommerce.CartProduct(ecommerce.CartProductViewModel{
+	return cc.RenderComponent(layouts.CartProduct(layouts.CartProductViewModel{
 		DetailId:           cartDetail.ID.String(),
 		ProductName:        product.Name,
 		ProductDescription: product.Description,

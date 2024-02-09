@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
-	"go-demo/views/ecommerce"
+	"go-demo/views/layouts"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
@@ -47,19 +47,19 @@ func (h getCartHandler) Handler(c echo.Context) error {
 			return err
 		}
 
-		return cc.RenderComponent(ecommerce.Cart([]ecommerce.CartProductViewModel{}, token))
+		return cc.RenderComponent(layouts.Cart([]layouts.CartProductViewModel{}, token))
 	}
 
 	cart := carts[0]
 
 	if len(cart.CartDetails) == 0 {
-		return cc.RenderComponent(ecommerce.Cart([]ecommerce.CartProductViewModel{}, token))
+		return cc.RenderComponent(layouts.Cart([]layouts.CartProductViewModel{}, token))
 	}
 
-	cartProducts := make([]ecommerce.CartProductViewModel, 0, len(cart.CartDetails))
+	cartProducts := make([]layouts.CartProductViewModel, 0, len(cart.CartDetails))
 	totalProductsQuantity := 0
 	for _, cartDetail := range cart.CartDetails {
-		cartProducts = append(cartProducts, ecommerce.CartProductViewModel{
+		cartProducts = append(cartProducts, layouts.CartProductViewModel{
 			DetailId:           cartDetail.ID.String(),
 			ProductName:        cartDetail.Product.Name,
 			ProductDescription: cartDetail.Product.Description,
@@ -80,5 +80,5 @@ func (h getCartHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleGetCart: error setting htmx trigger: %w", err)
 	}
 
-	return cc.RenderComponent(ecommerce.Cart(cartProducts, token))
+	return cc.RenderComponent(layouts.Cart(cartProducts, token))
 }

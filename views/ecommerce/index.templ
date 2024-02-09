@@ -3,27 +3,15 @@ package ecommerce
 import (
 	"go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
-	shared_views "go-demo/views/shared"
 	"go-demo/views/layouts"
 	"fmt"
 )
 
-type CartProductViewModel struct {
-	DetailId           string
-	ProductName        string
-	ProductDescription string
-	Quantity           int
-}
-
-css htmxIndicator() {
-}
-
 templ IndexPage() {
-	@layouts.Base() {
-		@shared_views.Toast()
-		<main class="container max-w-7xl mx-auto grid grid-cols-6 gap-4">
-			<section class="col-span-4">
-				@SectionTitle("Products")
+	@layouts.EcommerceLayout() {
+		<main class="container max-w-7xl mx-auto">
+			<section>
+				<h1 class="text-center text-4xl text-slate-900 p-2 mb-2">Our Wonderful Products</h1>
 				<ul
 					hx-get="/products/get-list"
 					hx-trigger="load"
@@ -33,21 +21,6 @@ templ IndexPage() {
 				>
 					<div id="indicator">
 						Loading products... 
-					</div>
-				</ul>
-			</section>
-			<section class="col-span-2">
-				@SectionTitle("Cart")
-				<ul
-					id="cart"
-					hx-get="/cart"
-					hx-trigger="load"
-					hx-target="this"
-					hx-indicator="#indicator"
-					class="space-y-2"
-				>
-					<div id="indicator">
-						Loading cart...
 					</div>
 				</ul>
 			</section>
@@ -89,47 +62,6 @@ templ ProductList(products []domain.Product, token string) {
 	}
 }
 
-templ Cart(models []CartProductViewModel, token string) {
-	for _, m := range models {
-		@CartProduct(m, token)
-	}
-}
-
-templ CartProduct(m CartProductViewModel, token string) {
-	<li id={ fmt.Sprintf("cart-item-%s", m.DetailId) } class="border border-slate-300 p-2 flex items-center justify-between">
-		<div>
-			<h2>{ m.ProductName }</h2>
-			<p>{ m.ProductDescription }</p>
-			<p>{ "Quantity:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
-		</div>
-		if m.Quantity > 1 {
-			@DecreateQuantityForm(m.DetailId, token)
-		} else {
-			@RemoveFromCartForm(m.DetailId, token)
-		}
-	</li>
-}
-
 templ SectionTitle(title string) {
 	<h1 class="text-center text-xl font-semibold p-2">{ title }</h1>
-}
-
-templ RemoveFromCartForm(detailId string, token string) {
-	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
-		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			X
-		</button>
-	</form>
-}
-
-templ DecreateQuantityForm(detailId string, token string) {
-	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
-		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			-
-		</button>
-	</form>
 }

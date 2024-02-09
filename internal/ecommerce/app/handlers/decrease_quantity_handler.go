@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
-	"go-demo/views/ecommerce"
+	"go-demo/views/layouts"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
@@ -79,7 +79,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleDecreaseQuantity: error setting htmx triggers: %w", err)
 	}
 
-	return cc.RenderComponent(ecommerce.CartProduct(ecommerce.CartProductViewModel{
+	return cc.RenderComponent(layouts.CartProduct(layouts.CartProductViewModel{
 		DetailId:           cartDetail.ID.String(),
 		ProductName:        cartDetail.Product.Name,
 		ProductDescription: cartDetail.Product.Description,

@@ -1,9 +1,5 @@
 package layouts
 
-import (
-	"go-demo/views"
-)
-
 templ Base() {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -13,29 +9,7 @@ templ Base() {
 			<script src="/static/js/hmtx.min.js"></script>
 			<script src="/static/js/hyperscript.min.js"></script>
 		</head>
-		<body hx-boost="true" class="bg-slate-50">
-			<header class="h-14 bg-slate-300 mb-12">
-				<div class="container max-w-7xl mx-auto flex justify-between items-center h-full">
-					<nav>
-						<a href="/">Products</a>
-						if views.HasAuthenticatedUser(ctx) {
-							<a href="/auth/logout">Logout</a>
-						}
-						if !views.HasAuthenticatedUser(ctx) {
-							<a href="/auth/login">Login</a>
-							<a href="/auth/register">Register</a>
-						}
-					</nav>
-					<div class="flex items-center gap-4">
-						@CartCount()
-						<div>
-							if views.HasAuthenticatedUser(ctx) {
-								<span>Logged in</span>
-							}
-						</div>
-					</div>
-				</div>
-			</header>
+		<body hx-boost="true" class="bg-slate-50 overflow-hidden">
 			{ children... }
 		</body>
 	</html>
