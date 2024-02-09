@@ -7,7 +7,9 @@ In the future this will be a template for hypermedia driven web applications in 
 ### STACK
 
 - Golang
-- HTMX
-- TailwindCSS
+- PostgreSQL
 - Bun
-- Sqlite
+- Echo
+- HTMX
+- Hyperscript
+- TailwindCSS
