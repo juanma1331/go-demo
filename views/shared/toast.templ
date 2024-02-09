@@ -1,21 +1,13 @@
 package shared
 
-script InitToastEvents() {
-    const delay = 3000
-    const toaster = document.querySelector('[data-toaster]')
-
-  
-      if (!toaster) {
-        throw new Error('No toaster found')
-    }
-
-
-    /**
+templ Toast() {
+	<script>
+     /**
     * @param {string} message
     * @param {string} type
     * @returns {HTMLDivElement}
     */
-    const createToast = (message, type) => {
+    function createToast (message, type) {
         const toast = document.createElement('div')
         toast.classList.add(
         'bg-slate-50', 
@@ -45,34 +37,13 @@ script InitToastEvents() {
         toast.innerText = message
         return toast
     }
-
-    const notify = (event) => {
-        /**
-        * @type {{message: string, type: string}}
-        */
-        const notification = JSON.parse(event.detail.value)
-
-        if (notification.message === undefined || typeof notification.message !== 'string') {
-            throw new Error('No message provided or message is not a string')
-        }
-
-        if (notification.type === undefined || typeof notification.type !== 'string') {
-            throw new Error('No type provided or type is not a string')
-        }
-
-        const toast = createToast(notification.message, notification.type)
-
-        toaster.appendChild(toast)
-
-        setTimeout(() => {
-            toaster.removeChild(toast)
-        }, delay)
-    }
-
-    document.addEventListener('notify', notify)
-    
-}
-
-templ Toast() {
-	<div data-toaster class="absolute right-24 top-24"></div>
+    </script>
+	<div
+		class="absolute right-24 top-24"
+		_="on every notify(value) from body set result to value as an Object
+            then call createToast(result.message, result.type)
+            then put it at the end of me
+            then wait 3s
+            then remove it"
+	></div>
 }

@@ -11,6 +11,7 @@ templ Base() {
 			<title>Go - WEB</title>
 			<link rel="stylesheet" href="/static/css/output.css"/>
 			<script src="/static/js/hmtx.min.js"></script>
+			<script src="/static/js/hyperscript.min.js"></script>
 		</head>
 		<body hx-boost="true" class="bg-slate-50">
 			<header class="h-14 bg-slate-300 mb-12">
@@ -36,7 +37,6 @@ templ Base() {
 				</div>
 			</header>
 			{ children... }
-			@InitCartCountEvents()
 		</body>
 	</html>
 }

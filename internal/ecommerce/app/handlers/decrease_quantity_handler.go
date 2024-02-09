@@ -68,7 +68,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 
 	// Notifying the client that the cart was updated
 	cartUpdatedTrigger := shared.HtmxTrigger{
-		Name: "cart-updated",
+		Name: "cart_updated",
 		Value: map[string]string{
 			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
 		},

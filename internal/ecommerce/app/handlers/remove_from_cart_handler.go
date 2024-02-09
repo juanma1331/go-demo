@@ -67,7 +67,7 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 	}
 
 	cartUpdatedTrigger := shared.HtmxTrigger{
-		Name: "cart-updated",
+		Name: "cart_updated",
 		Value: map[string]string{
 			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)-1),
 		},
