@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
 	"go-demo/views/ecommerce"
+	"net/http"
 
 	"github.com/gorilla/csrf"
 	"github.com/labstack/echo"
@@ -21,10 +21,24 @@ func NewGetProductListHandler(db *bun.DB) getProductListHandler {
 func (h getProductListHandler) Handler(c echo.Context) error {
 	cc := c.(shared.AppContext)
 
-	products := []domain.Product{}
-	h.db.NewSelect().Model(&products).Scan(cc.Request().Context())
+	limit := 10
+	var initialCursor int64
+
+	products, newCursor, err := selectProductsNextPage(c, h.db, initialCursor, limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	productViewModels := []ecommerce.ProductViewModel{}
+	for _, p := range products {
+		productViewModels = append(productViewModels, ecommerce.ProductViewModel{
+			ID:          p.ID.String(),
+			Name:        p.Name,
+			Description: p.Description,
+		})
+	}
 
 	csrfToken := csrf.Token(cc.Request())
 
-	return cc.RenderComponent(ecommerce.ProductList(products, csrfToken))
+	return cc.RenderComponent(ecommerce.ProductList(productViewModels, csrfToken, newCursor))
 }

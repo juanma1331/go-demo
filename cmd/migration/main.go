@@ -6,6 +6,7 @@ import (
 	auth_domain "go-demo/internal/auth/domain"
 	ecommerce_domain "go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/uptrace/bun"
@@ -47,7 +48,11 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Println("Starting migration")
+	migrationStart := time.Now()
 	createTablesErr := CreateTables(db, context.Background())
+	migrationEnd := time.Since(migrationStart)
+	fmt.Printf("Migration finished in %s\n", migrationEnd)
 
 	if createTablesErr != nil {
 		panic(createTablesErr)

@@ -14,7 +14,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const NUMBER_OF_PRODUCTS = 3
+const NUMBER_OF_PRODUCTS = 30
 
 func main() {
 	err := godotenv.Load()
@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	migrationStart := time.Now()
+	seedingStart := time.Now()
 
 	products := createProducts()
 
@@ -45,8 +45,8 @@ func main() {
 		panic(insertAdminErr)
 	}
 
-	migrationEnd := time.Since(migrationStart)
-	fmt.Printf("Seeding finished in %s\n", migrationEnd)
+	seedingEnd := time.Since(seedingStart)
+	fmt.Printf("Seeding finished in %s\n", seedingEnd)
 }
 
 func createProducts() []ecommerce_domain.Product {

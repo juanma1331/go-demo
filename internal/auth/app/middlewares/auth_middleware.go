@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-demo/internal/auth/app/services"
 	"go-demo/internal/shared"
+	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -21,7 +22,7 @@ func (am AuthMiddleware) WithUserMiddleware(next echo.HandlerFunc) echo.HandlerF
 
 		session, err := am.SessionStore.Get(c.Request(), services.SESSION_NAME)
 		if err != nil {
-			cc.Error(echo.NewHTTPError(500, fmt.Errorf("WithUserMiddleware: Failed to get session: %w", err)))
+			cc.Error(echo.NewHTTPError(http.StatusInternalServerError))
 			return next(cc)
 		}
 

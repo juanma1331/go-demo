@@ -2,10 +2,7 @@ package layouts
 
 import (
 	"go-demo/views"
-	"go-demo/views/components/icons"
-	"fmt"
 	shared_views "go-demo/views/shared"
-	"go-demo/internal/shared"
 )
 
 type CartProductViewModel struct {
@@ -43,97 +40,4 @@ templ EcommerceLayout() {
 		@cart()
 		{ children... }
 	}
-}
-
-templ cartToggler() {
-	<button
-		id="cart-toggler"
-		aria-controls="cart"
-		aria-expanded="false"
-		class="flex items-center gap-2 bg-slate-200 py-1 px-2 rounded-md shadow-md"
-		_="on click send cart_toggle to #cart"
-	>
-		<div
-			class="text-sm font-semibold text-slate-900"
-			_="on cart_updated(value) from body set result to value as an Object 
-			then put result.quantity into me"
-		>
-			0
-		</div>
-		@icons.Cart()
-	</button>
-}
-
-templ cart() {
-	<div
-		class="absolute top-14 right-[-32rem] w-[32rem] min-h-screen z-10 p-4 border-l border-1 border-slate-200 bg-slate-50"
-		data-state="closed"
-		_="on every cart_toggle
-			if @data-state == 'closed' 
-				set @data-state to 'open'
-				set #cart-toggler's @aria-expanded to 'true'
-				transition my *right to 0rem
-			else 
-				set @data-state to 'closed'
-				set #cart-toggler's @aria-expanded to 'false'
-				transition my *right to initial
-			end"
-	>
-		<h2 class="text-md font-semibold mb-2 text-slate-700">Your products</h2>
-		<ul
-			id="cart"
-			role="region"
-			aria-label="cart"
-			hx-get="/cart"
-			hx-trigger="load"
-			hx-target="this"
-			hx-indicator="#indicator"
-			class="space-y-2"
-		>
-			<div id="indicator">
-				Loading cart...
-			</div>
-		</ul>
-	</div>
-}
-
-templ Cart(models []CartProductViewModel, token string) {
-	for _, m := range models {
-		@CartProduct(m, token)
-	}
-}
-
-templ CartProduct(m CartProductViewModel, token string) {
-	<li id={ fmt.Sprintf("cart-item-%s", m.DetailId) } class="border border-slate-300 p-2 flex items-center justify-between">
-		<div>
-			<h2>{ m.ProductName }</h2>
-			<p>{ m.ProductDescription }</p>
-			<p>{ "Quantity:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
-		</div>
-		if m.Quantity > 1 {
-			@DecreateQuantityForm(m.DetailId, token)
-		} else {
-			@RemoveFromCartForm(m.DetailId, token)
-		}
-	</li>
-}
-
-templ RemoveFromCartForm(detailId string, token string) {
-	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
-		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			X
-		</button>
-	</form>
-}
-
-templ DecreateQuantityForm(detailId string, token string) {
-	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
-		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			-
-		</button>
-	</form>
 }

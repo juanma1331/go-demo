@@ -38,6 +38,7 @@ func main() {
 		fmt.Println("Error opening DB")
 		panic(err)
 	}
+	defer dbInstance.Close()
 
 	sessionStore, err := auth_infra.NewSessionStore(dsn)
 	if err != nil {
@@ -92,6 +93,7 @@ func main() {
 
 	showProductIndexHandler := ecommerce_handlers.NewShowProductIndexHandler()
 	getProductListHandler := ecommerce_handlers.NewGetProductListHandler(dbInstance)
+	getMoreProductsHandler := ecommerce_handlers.NewGetMoreProductsHandler(dbInstance)
 	getCartHandler := ecommerce_handlers.NewGetCartHandler(dbInstance)
 	addToCartHandler := ecommerce_handlers.NewAddToCartHandler(dbInstance)
 	decreaseQuantityHandler := ecommerce_handlers.NewDecreaseQuantityHandler(dbInstance)
@@ -104,25 +106,26 @@ func main() {
 	ec.Use(csrfMiddleware.WithCSRFMiddleware)
 	ec.Use(flashMiddleware.WithFlashMiddleWare)
 
-	ec.Use(func(hf echo.HandlerFunc) echo.HandlerFunc {
+	// Error propagation
+	ec.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			cc := c.(shared.AppContext)
-			fmt.Printf("User: %+v\n", cc.User)
-			fmt.Printf("Flash: %+v\n", cc.Flash)
-			return hf(cc)
+			err := next(c)
+
+			if err != nil {
+				c.Error(err)
+			}
+			return nil
 		}
 	})
-
 	ec.Use(middleware.Gzip())
 	ec.Use(middleware.Recover())
-
-	ec.HTTPErrorHandler = shared.CustomHTTPErrorHandler
 
 	// Routes
 	ec.GET("/", func(ctx echo.Context) error {
 		return ctx.Redirect(302, "/products")
 	})
 
+	ec.HTTPErrorHandler = shared.CustomHTTPErrorHandler
 	// Ecommerce routes
 	cartGroup := ec.Group("/cart")
 	cartGroup.GET("", getCartHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
@@ -134,6 +137,7 @@ func main() {
 	productsGroup := ec.Group("/products")
 	productsGroup.GET("", showProductIndexHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
 	productsGroup.GET("/get-list", getProductListHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
+	productsGroup.GET("/get-more/:cursor", getMoreProductsHandler.Handler)
 	productsGroup.GET("/:id/image/:size", getProductImageHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
 
 	// Auth routes
