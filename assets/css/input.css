@@ -11,3 +11,24 @@
   opacity: 0.5;
   display: block;
 }
+
+/* Style the entire scrollbar */
+::-webkit-scrollbar {
+  width: 6px; /* Scrollbar width */
+}
+
+/* Style the scrollbar track */
+::-webkit-scrollbar-track {
+  background: rgb(241 245 249 1); /* Background color */
+}
+
+/* Style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: rgb(153, 153, 170); /* Thumb color */
+  border-radius: 3px; /* Roundness of the thumb */
+}
+
+/* Style the scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Thumb color on hover */
+}

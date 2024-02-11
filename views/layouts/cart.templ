@@ -62,10 +62,10 @@ templ cart() {
 		_="on every cart_toggle
 			if @data-state == 'closed' 
 				set @data-state to 'open'
-				transition my *right to 0rem over 0.5s
+				transition my *right to 0rem over 0.2 seconds
 			else 
 				set @data-state to 'closed'
-				transition my *right to initial over 0.5s
+				transition my *right to initial over 0.2 seconds
 			end"
 	>
 		<h2 class="text-md font-semibold mb-2 text-slate-700">Your products</h2>
