@@ -1,0 +1,17 @@
+package typography
+
+const (
+	H1 = "text-4xl font-RobotoMono text-slate-900"
+	H2 = "text-3xl font-RobotoMono text-slate-900"
+)
+
+templ Title(txt, class string, lvl int) {
+	switch lvl {
+		case 1:
+			<h1 class={ H1, class }>{ txt }</h1>
+		case 2:
+			<h2 class={ H2, class }>{ txt }</h2>
+		default:
+			<h1 class={ H1, class }>{ txt }</h1>
+	}
+}

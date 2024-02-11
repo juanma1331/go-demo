@@ -60,7 +60,8 @@ func (h getCartHandler) Handler(c echo.Context) error {
 	totalProductsQuantity := 0
 	for _, cartDetail := range cart.CartDetails {
 		cartProducts = append(cartProducts, layouts.CartProductViewModel{
-			DetailId:           cartDetail.ID.String(),
+			DetailID:           cartDetail.ID.String(),
+			ProductID:          cartDetail.ProductID.String(),
 			ProductName:        cartDetail.Product.Name,
 			ProductDescription: cartDetail.Product.Description,
 			Quantity:           cartDetail.Quantity,

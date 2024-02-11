@@ -7,49 +7,70 @@ import (
 )
 
 type CartProductViewModel struct {
-	DetailId           string
+	DetailID           string
+	ProductID          string
 	ProductName        string
 	ProductDescription string
 	Quantity           int
 }
 
-templ cartToggler() {
+templ cartToggler(txt string) {
 	<button
 		id="cart-toggler"
 		aria-controls="cart"
 		aria-expanded="false"
-		class="flex items-center gap-2 bg-slate-200 py-1 px-2 rounded-md shadow-md"
-		_="on click send cart_toggle to #cart"
+		class="bg-slate-800 py-1 transform px-2 rounded-md shadow-md shadow-slate-800"
+		_="on click
+			if #cart's @data-state == 'closed' 
+				remove .shadow-md from me
+				set my *transform to 'scale(0.95)'
+				set @aria-expanded to true
+
+			else 
+				add .shadow-md to me
+				set my *transform to 'scale(1)'
+				set @aria-expanded to false
+			end 
+			send cart_toggle to #cart"
 	>
-		<div
-			class="text-sm font-semibold text-slate-900"
+		<div class="flex items-center gap-2 ">
+			<p class="text-sm text-slate-100">{ txt }</p>
+			@cartCounter()
+		</div>
+	</button>
+}
+
+templ cartCounter() {
+	<div class="relative h-8 w-8 flex items-center">
+		<span
+			id="cart-counter"
+			class="absolute top-0 right-0 justify-center rounded-full text-xs font-light text-green-50 "
 			_="on cart_updated(value) from body set result to value as an Object 
-			then put result.quantity into me"
+					then put result.quantity into me"
 		>
 			0
-		</div>
+		</span>
 		@icons.Cart()
-	</button>
+	</div>
 }
 
 templ cart() {
 	<div
-		class="absolute top-14 right-[-32rem] w-[32rem] min-h-screen z-10 p-4 border-l border-1 border-slate-200 bg-slate-50"
+		id="cart"
+		class="absolute top-14 right-[-32rem] w-[32rem] min-h-screen transition-all ease-in-out z-10 p-4 border border-1 border-slate-200 bg-white"
 		data-state="closed"
 		_="on every cart_toggle
 			if @data-state == 'closed' 
 				set @data-state to 'open'
-				set #cart-toggler's @aria-expanded to 'true'
-				transition my *right to 0rem
+				transition my *right to 0rem over 0.5s
 			else 
 				set @data-state to 'closed'
-				set #cart-toggler's @aria-expanded to 'false'
-				transition my *right to initial
+				transition my *right to initial over 0.5s
 			end"
 	>
 		<h2 class="text-md font-semibold mb-2 text-slate-700">Your products</h2>
 		<ul
-			id="cart"
+			id="cart-placeholder"
 			role="region"
 			aria-label="cart"
 			hx-get="/cart"
@@ -72,23 +93,32 @@ templ Cart(models []CartProductViewModel, token string) {
 }
 
 templ CartProduct(m CartProductViewModel, token string) {
-	<li id={ fmt.Sprintf("cart-item-%s", m.DetailId) } class="border border-slate-300 p-2 flex items-center justify-between">
-		<div>
-			<h2>{ m.ProductName }</h2>
-			<p>{ m.ProductDescription }</p>
-			<p>{ "Quantity:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
+	<li
+		id={ fmt.Sprintf("cart-item-%s", m.DetailID) }
+		class="flex items-center gap-2 border border-slate-300 rounded-md p-1"
+	>
+		<img
+			src={ fmt.Sprintf("/products/%s/image/medium", m.ProductID) }
+			alt={ fmt.Sprintf("a small image of %s", m.ProductName) }
+			class="aspect-square h-16 rounded-md"
+		/>
+		<div class="w-full h-16 flex items-center justify-between gap-2">
+			<div class="flex flex-col justify-between h-full">
+				<h2 class="text-sm font-semibold text-slate-900">{ m.ProductName }</h2>
+				<p class="text-xs text-slate-700">{ "Qty:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
+			</div>
+			if m.Quantity > 1 {
+				@DecreateQuantityForm(m.DetailID, token)
+			} else {
+				@RemoveFromCartForm(m.DetailID, token)
+			}
 		</div>
-		if m.Quantity > 1 {
-			@DecreateQuantityForm(m.DetailId, token)
-		} else {
-			@RemoveFromCartForm(m.DetailId, token)
-		}
 	</li>
 }
 
-templ RemoveFromCartForm(detailId string, token string) {
-	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
+templ RemoveFromCartForm(detailID string, token string) {
+	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
+		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
 		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
 			X
@@ -96,9 +126,9 @@ templ RemoveFromCartForm(detailId string, token string) {
 	</form>
 }
 
-templ DecreateQuantityForm(detailId string, token string) {
-	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailId) } hx-swap="outerHTML">
-		<input type="hidden" name="cart_detail_id" value={ detailId }/>
+templ DecreateQuantityForm(detailID string, token string) {
+	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
+		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
 		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
 			-

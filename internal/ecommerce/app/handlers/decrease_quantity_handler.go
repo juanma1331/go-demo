@@ -80,7 +80,8 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 	}
 
 	return cc.RenderComponent(layouts.CartProduct(layouts.CartProductViewModel{
-		DetailId:           cartDetail.ID.String(),
+		DetailID:           cartDetail.ID.String(),
+		ProductID:          cartDetail.ProductID.String(),
 		ProductName:        cartDetail.Product.Name,
 		ProductDescription: cartDetail.Product.Description,
 		Quantity:           cartDetail.Quantity,

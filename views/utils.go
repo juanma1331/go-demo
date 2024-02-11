@@ -22,3 +22,12 @@ func GetFlash(ctx context.Context) *[]shared.FlashMessage {
 
 	return flash
 }
+
+func GetAuthenticatedUser(ctx context.Context) *shared.AuthenticatedUser {
+	user, ok := ctx.Value(shared.ContextUserKey).(*shared.AuthenticatedUser)
+	if !ok {
+		return nil
+	}
+
+	return user
+}

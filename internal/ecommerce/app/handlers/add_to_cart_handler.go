@@ -70,7 +70,8 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 
 	// If the product was not in the cart, we need to add it to the cart
 	return cc.RenderComponent(layouts.CartProduct(layouts.CartProductViewModel{
-		DetailId:           cartDetail.ID.String(),
+		DetailID:           cartDetail.ID.String(),
+		ProductID:          product.ID.String(),
 		ProductName:        product.Name,
 		ProductDescription: product.Description,
 		Quantity:           cartDetail.Quantity,
