@@ -16,14 +16,14 @@ templ IndexPage() {
 	@layouts.EcommerceLayout() {
 		<main class="container max-w-7xl mx-auto">
 			<section>
-				<h1 class="text-center text-4xl text-slate-900 p-2 mb-2">Our Wonderful Products</h1>
+				<h1 class="text-4xl font-RobotoMono text-slate-900 mb-2">Our Wonderful Products</h1>
 				<ul
 					id="product-list"
 					hx-get="/products/get-list"
 					hx-trigger="load"
 					hx-target="this"
 					hx-indicator="#indicator"
-					class="grid grid-cols-3 gap-4 max-h-[75vh] overflow-y-auto "
+					class="grid grid-cols-3 gap-4 max-h-[75vh] overflow-y-auto"
 				>
 					<div id="indicator">
 						Loading products... 

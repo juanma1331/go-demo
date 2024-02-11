@@ -5,17 +5,11 @@ import (
 	shared_views "go-demo/views/shared"
 )
 
-type CartProductViewModel struct {
-	DetailId           string
-	ProductName        string
-	ProductDescription string
-	Quantity           int
-}
-
 templ EcommerceLayout() {
 	@Base() {
 		<header class="h-14 bg-slate-200 mb-12">
 			<div class="container max-w-7xl mx-auto flex justify-between items-center h-full">
+				<p class="font-Workbench text-2xl text-slate-950">Hypermedia Driven Ecommerce</p>
 				<nav>
 					<a href="/">Products</a>
 					if views.HasAuthenticatedUser(ctx) {

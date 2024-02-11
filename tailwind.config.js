@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./views/**/*.{templ,go}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        Workbench: ["Workbench", "sans-serif"],
+        RobotoMono: ["RobotoMono", "monospace"],
+      },
+    },
   },
   plugins: [],
 };

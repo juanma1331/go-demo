@@ -6,6 +6,13 @@ import (
 	"go-demo/internal/shared"
 )
 
+type CartProductViewModel struct {
+	DetailId           string
+	ProductName        string
+	ProductDescription string
+	Quantity           int
+}
+
 templ cartToggler() {
 	<button
 		id="cart-toggler"
