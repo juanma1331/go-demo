@@ -24,7 +24,7 @@ func NewGetMoreProductsHandler(db *bun.DB) getMoreProductsHandler {
 func (h getMoreProductsHandler) Handler(c echo.Context) error {
 	cc := c.(shared.AppContext)
 
-	limit := 10
+	limit := 30
 	cursor, err := strconv.ParseInt(cc.Param("cursor"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)

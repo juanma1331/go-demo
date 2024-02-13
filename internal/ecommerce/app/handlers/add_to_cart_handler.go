@@ -74,6 +74,7 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 		ProductID:          product.ID.String(),
 		ProductName:        product.Name,
 		ProductDescription: product.Description,
+		ProductPrice:       product.Price,
 		Quantity:           cartDetail.Quantity,
 	}, token))
 }

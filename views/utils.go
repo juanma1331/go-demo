@@ -2,6 +2,7 @@ package views
 
 import (
 	"context"
+	"fmt"
 	"go-demo/internal/shared"
 )
 
@@ -30,4 +31,8 @@ func GetAuthenticatedUser(ctx context.Context) *shared.AuthenticatedUser {
 	}
 
 	return user
+}
+
+func FormatPrice(price int64) string {
+	return fmt.Sprintf("$%d", price)
 }

@@ -21,7 +21,7 @@ func NewGetProductListHandler(db *bun.DB) getProductListHandler {
 func (h getProductListHandler) Handler(c echo.Context) error {
 	cc := c.(shared.AppContext)
 
-	limit := 10
+	limit := 30
 	var initialCursor int64
 
 	products, newCursor, err := selectProductsNextPage(c, h.db, initialCursor, limit)
@@ -35,6 +35,7 @@ func (h getProductListHandler) Handler(c echo.Context) error {
 			ID:          p.ID.String(),
 			Name:        p.Name,
 			Description: p.Description,
+			Price:       p.Price,
 		})
 	}
 

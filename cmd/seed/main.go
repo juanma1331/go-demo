@@ -7,6 +7,7 @@ import (
 	auth_infra "go-demo/internal/auth/infra"
 	ecommerce_domain "go-demo/internal/ecommerce/domain"
 	"go-demo/internal/shared"
+	"math/rand"
 	"os"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const NUMBER_OF_PRODUCTS = 30
+const NUMBER_OF_PRODUCTS = 1000
 
 func main() {
 	err := godotenv.Load()
@@ -66,12 +67,12 @@ func createProducts() []ecommerce_domain.Product {
 			panic(err)
 		}
 
-		smallImage, err := shared.ResizeImage(img, 200, 200)
+		smallImage, err := shared.ResizeImage(img, 64, 64)
 		if err != nil {
 			panic(fmt.Errorf("createProduct: failed to resize small image: %w", err))
 		}
 
-		mediumImage, err := shared.ResizeImage(img, 384, 192)
+		mediumImage, err := shared.ResizeImage(img, 180, 192)
 		if err != nil {
 			panic(fmt.Errorf("createProduct: failed to resize medium image: %w", err))
 		}
@@ -80,6 +81,7 @@ func createProducts() []ecommerce_domain.Product {
 			ID:          uuid.New(),
 			Name:        fmt.Sprintf("Product %d", i+1),
 			Description: fmt.Sprintf("Product %d description", i+1),
+			Price:       int64(rand.Intn(1000)),
 			ImageSmall:  smallImage,
 			ImageMedium: mediumImage,
 		})

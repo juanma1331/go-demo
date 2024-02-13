@@ -84,6 +84,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 		ProductID:          cartDetail.ProductID.String(),
 		ProductName:        cartDetail.Product.Name,
 		ProductDescription: cartDetail.Product.Description,
+		ProductPrice:       cartDetail.Product.Price,
 		Quantity:           cartDetail.Quantity,
 	}, token))
 }
