@@ -70,8 +70,8 @@ templ ProductList(products []ProductViewModel, token string, cursor string) {
 	<div
 		hx-get={ fmt.Sprintf("/products/get-more/%s", cursor) }
 		hx-trigger="intersect once"
-		hx-target="#product-list"
-		hx-swap="beforeend"
+		hx-target="this"
+		hx-swap="outerHTML"
 		_="on htmx:afterRequest if detail.elt is me then remove me"
 	></div>
 }
