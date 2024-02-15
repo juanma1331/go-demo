@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	auth_domain "go-demo/internal/auth/domain"
-	auth_infra "go-demo/internal/auth/infra"
-	ecommerce_domain "go-demo/internal/ecommerce/domain"
-	"go-demo/internal/shared"
 	"math/rand"
 	"os"
 	"time"
+
+	auth_domain "github.com/juanma1331/go-demo/internal/auth/domain"
+	auth_infra "github.com/juanma1331/go-demo/internal/auth/infra"
+	ecommerce_domain "github.com/juanma1331/go-demo/internal/ecommerce/domain"
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"

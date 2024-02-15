@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-demo/internal/shared"
-	"go-demo/views/ecommerce"
+	"github.com/juanma1331/go-demo/internal/shared"
+	"github.com/juanma1331/go-demo/views/ecommerce"
 
 	"github.com/labstack/echo"
 )

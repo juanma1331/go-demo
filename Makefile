@@ -22,7 +22,7 @@ test:
 .PHONY: build-dev
 build-dev:
 	@templ generate
-	@go build -o ./tmp/main-dev.exe ./cmd/main.go
+	@go build -o ./tmp/main-dev.exe .
 
 
 .PHONY: start

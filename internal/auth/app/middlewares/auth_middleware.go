@@ -3,9 +3,10 @@ package middlewares
 import (
 	"errors"
 	"fmt"
-	"go-demo/internal/auth/app/services"
-	"go-demo/internal/shared"
 	"net/http"
+
+	"github.com/juanma1331/go-demo/internal/auth/app/services"
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"

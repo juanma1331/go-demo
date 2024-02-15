@@ -3,8 +3,9 @@ package infra
 import (
 	"context"
 	"database/sql"
-	"go-demo/internal/auth/app/services"
-	"go-demo/internal/auth/domain"
+
+	"github.com/juanma1331/go-demo/internal/auth/app/services"
+	"github.com/juanma1331/go-demo/internal/auth/domain"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"

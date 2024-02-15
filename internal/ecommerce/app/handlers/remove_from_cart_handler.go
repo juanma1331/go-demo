@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"go-demo/internal/ecommerce/domain"
-	"go-demo/internal/shared"
 	"net/http"
+
+	"github.com/juanma1331/go-demo/internal/ecommerce/domain"
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"

@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go-demo/internal/shared"
+
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/joho/godotenv"
 )

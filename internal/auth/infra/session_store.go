@@ -3,9 +3,10 @@ package infra
 import (
 	"encoding/gob"
 	"fmt"
-	"go-demo/internal/shared"
 	"net/http"
 	"time"
+
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/antonlindstrom/pgstore"
 	"github.com/google/uuid"

@@ -1,8 +1,9 @@
 package validation
 
 import (
-	"go-demo/internal/shared"
 	"unicode"
+
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/go-playground/validator/v10"
 )

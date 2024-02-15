@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"go-demo/internal/ecommerce/domain"
-	"go-demo/internal/shared"
-	"go-demo/views/ecommerce"
 	"net/http"
 	"strconv"
+
+	"github.com/juanma1331/go-demo/internal/ecommerce/domain"
+	"github.com/juanma1331/go-demo/internal/shared"
+	"github.com/juanma1331/go-demo/views/ecommerce"
 
 	"github.com/gorilla/csrf"
 	"github.com/labstack/echo"

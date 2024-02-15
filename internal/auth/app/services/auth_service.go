@@ -1,9 +1,10 @@
 package services
 
 import (
-	"go-demo/internal/auth/domain"
-	"go-demo/internal/shared"
 	"net/http"
+
+	"github.com/juanma1331/go-demo/internal/auth/domain"
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"

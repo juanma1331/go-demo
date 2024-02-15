@@ -1,4 +1,4 @@
-module go-demo
+module github.com/juanma1331/go-demo
 
 go 1.21.5
 

@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"go-demo/internal/ecommerce/domain"
 	"net/http"
+
+	"github.com/juanma1331/go-demo/internal/ecommerce/domain"
 
 	"github.com/labstack/echo"
 	"github.com/uptrace/bun"

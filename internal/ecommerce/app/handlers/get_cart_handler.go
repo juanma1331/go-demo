@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"go-demo/internal/ecommerce/domain"
-	"go-demo/internal/shared"
-	"go-demo/views/layouts"
+
+	"github.com/juanma1331/go-demo/internal/ecommerce/domain"
+	"github.com/juanma1331/go-demo/internal/shared"
+	"github.com/juanma1331/go-demo/views/layouts"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/csrf"

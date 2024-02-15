@@ -1,6 +1,6 @@
 package handlers
 
-import "go-demo/internal/ecommerce/domain"
+import "github.com/juanma1331/go-demo/internal/ecommerce/domain"
 
 func calculateTotalQuantity(cartDetails []domain.CartDetail) int {
 	total := 0

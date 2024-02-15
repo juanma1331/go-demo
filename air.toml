@@ -3,7 +3,7 @@ tmp_dir = "tmp"
 
 [build]
 bin = "./tmp/main-dev.exe"
-cmd = "templ generate && go build -o ./tmp/main-dev.exe ./cmd/main.go"
+cmd = "templ generate && go build -o ./tmp/main-dev.exe ."
 
 delay = 1000
 exclude_file = []

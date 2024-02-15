@@ -3,7 +3,8 @@ package views
 import (
 	"context"
 	"fmt"
-	"go-demo/internal/shared"
+
+	"github.com/juanma1331/go-demo/internal/shared"
 )
 
 func HasAuthenticatedUser(ctx context.Context) bool {

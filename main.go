@@ -1,17 +1,23 @@
 package main
 
 import (
+	"embed"
 	"fmt"
-	auth_handlers "go-demo/internal/auth/app/handlers"
-	auth_middlewares "go-demo/internal/auth/app/middlewares"
-	auth_service "go-demo/internal/auth/app/services"
-	auth_validation "go-demo/internal/auth/app/services/validation"
-	auth_infra "go-demo/internal/auth/infra"
-	ecommerce_handlers "go-demo/internal/ecommerce/app/handlers"
+	"io/fs"
+	"log"
+	"net/http"
 
-	"go-demo/internal/shared"
+	auth_handlers "github.com/juanma1331/go-demo/internal/auth/app/handlers"
+	auth_middlewares "github.com/juanma1331/go-demo/internal/auth/app/middlewares"
+	auth_service "github.com/juanma1331/go-demo/internal/auth/app/services"
+	auth_validation "github.com/juanma1331/go-demo/internal/auth/app/services/validation"
+	auth_infra "github.com/juanma1331/go-demo/internal/auth/infra"
+	ecommerce_handlers "github.com/juanma1331/go-demo/internal/ecommerce/app/handlers"
+
 	"os"
 	"time"
+
+	"github.com/juanma1331/go-demo/internal/shared"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
@@ -19,8 +25,16 @@ import (
 	"github.com/labstack/echo/middleware"
 )
 
+//go:embed assets/*
+var embeddedFiles embed.FS
+
 func main() {
-	err := godotenv.Load()
+	assetsFS, err := fs.Sub(embeddedFiles, "assets")
+	if err != nil {
+		log.Fatal("failed to locate embedded assets:", err)
+	}
+
+	err = godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
@@ -28,9 +42,6 @@ func main() {
 	dsn := os.Getenv("DATABASE_URL")
 
 	ec := echo.New()
-
-	// Add static files support
-	ec.Static("/static", "assets")
 
 	// Dependencies
 	dbInstance, err := shared.OpenDB()
@@ -120,6 +131,8 @@ func main() {
 	ec.Use(middleware.Gzip())
 	ec.Use(middleware.Recover())
 
+	ec.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", http.FileServer(http.FS(assetsFS)))))
+
 	// Routes
 	ec.GET("/", func(ctx echo.Context) error {
 		return ctx.Redirect(302, "/products")
@@ -137,7 +150,7 @@ func main() {
 	productsGroup := ec.Group("/products")
 	productsGroup.GET("", showProductIndexHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
 	productsGroup.GET("/get-list", getProductListHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
-	productsGroup.GET("/get-more/:cursor", getMoreProductsHandler.Handler)
+	productsGroup.GET("/get-more/:cursor", getMoreProductsHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
 	productsGroup.GET("/:id/image/:size", getProductImageHandler.Handler, authMiddleware.WithAuthenticationRequiredMiddleware)
 
 	// Auth routes
