@@ -44,7 +44,6 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 	if cartDetail.Quantity > 1 {
 		// If the product was already in the cart, we need to update the quantity on the client cart
 		shared.SetHtmxRetarget(cc.Response().Writer, fmt.Sprintf("#cart-item-%s", cartDetail.ID.String()))
-
 		shared.SetHtmxReswap(cc.Response().Writer, "outerHTML")
 	}
 
@@ -75,7 +74,7 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 		ProductID:          product.ID.String(),
 		ProductName:        product.Name,
 		ProductDescription: product.Description,
-		ProductPrice:       product.Price,
+		ProductPrice:       product.Price * int64(cartDetail.Quantity),
 		Quantity:           cartDetail.Quantity,
 	}, token))
 }
