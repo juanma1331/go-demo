@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/gorilla/csrf"
 	"github.com/juanma1331/go-demo/internal/auth/app/services"
 	"github.com/juanma1331/go-demo/internal/shared"
 	"github.com/juanma1331/go-demo/views/auth"
@@ -36,8 +37,11 @@ func (uh *loginHandler) Handler(c echo.Context) error {
 	if err := uh.authService.Login(cc.Request(), cc.Response(), input); err != nil {
 		fmt.Println(err)
 		if errors.Is(err, services.ErrInvalidCredentials) {
+			csrfToken := csrf.Token(cc.Request())
+
 			viewModel := auth.LoginPageViewModel{
 				HasInvalidCredentials: true,
+				CSRFToken:             csrfToken,
 			}
 
 			return cc.RenderComponent(auth.LoginPage(viewModel))
