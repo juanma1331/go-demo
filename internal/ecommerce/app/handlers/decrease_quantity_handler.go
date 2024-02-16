@@ -33,17 +33,9 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 	}
 
 	// Get cart detail
-	var cartDetailIndex int
-	for i, cd := range cart.CartDetails {
-		if cd.ID.String() == cartDetailId {
-			cartDetailIndex = i
-			break
-		}
-	}
+	cartDetail := cart.GetCartDetail(uuid.MustParse(cartDetailId))
 
-	cartDetail := &cart.CartDetails[cartDetailIndex]
-
-	if cartDetail.ID == uuid.Nil {
+	if cartDetail == nil {
 		return fmt.Errorf("HandleDecreaseQuantity: cart detail not found")
 	}
 
@@ -51,7 +43,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleDecreaseQuantity: cart detail quantity is already 1")
 	}
 
-	cartDetail.Quantity--
+	cartDetail.DecreaseQuantity()
 
 	err = h.updateCartDetail(cartDetail, cc)
 	if err != nil {
@@ -71,8 +63,8 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
-			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
-			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)),
+			"quantity": fmt.Sprintf("%d", cart.GetTotalQuantity()),
+			"total":    fmt.Sprintf("%d", cart.GetTotalPrice()),
 		},
 	}
 

@@ -13,3 +13,11 @@ type CartDetail struct {
 	Product       *Product  `bun:"rel:belongs-to,join:product_id=id"`
 	Quantity      int       `bun:"quantity,notnull"`
 }
+
+func (cd *CartDetail) IncreaseQuantity() {
+	cd.Quantity++
+}
+
+func (cd *CartDetail) DecreaseQuantity() {
+	cd.Quantity--
+}

@@ -7,7 +7,6 @@ import (
 	"github.com/juanma1331/go-demo/internal/shared"
 	"github.com/juanma1331/go-demo/views/layouts"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/csrf"
 	"github.com/labstack/echo"
 	"github.com/uptrace/bun"
@@ -36,9 +35,14 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleAddToCart: cart not found: %w", err)
 	}
 
-	cartDetail, err := h.updateOrInsertProductInCart(&cart, product, cc)
+	cartDetail, inCart, err := cart.AddOrUpdateProduct(product)
 	if err != nil {
-		return fmt.Errorf("HandleAddToCart: error updating or inserting product in cart: %w", err)
+		return fmt.Errorf("HandleAddToCart: error adding or updating product in cart: %w", err)
+	}
+
+	err = h.updateOrInsertInDB(cartDetail, inCart, cc)
+	if err != nil {
+		return fmt.Errorf("HandleAddToCart: error updating or inserting cart detail in db: %w", err)
 	}
 
 	if cartDetail.Quantity > 1 {
@@ -59,8 +63,8 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
-			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
-			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)),
+			"quantity": fmt.Sprintf("%d", cart.GetTotalQuantity()),
+			"total":    fmt.Sprintf("%d", cart.GetTotalPrice()),
 		},
 	}
 
@@ -108,41 +112,27 @@ func (h addToCartHandler) getActiveCart(userId string, cc shared.AppContext) (do
 	return cart, nil
 }
 
-func (h addToCartHandler) updateOrInsertProductInCart(cart *domain.Cart, product domain.Product, cc shared.AppContext) (domain.CartDetail, error) {
-	var cartDetail domain.CartDetail
-	productInCart := false
-
-	for i, cd := range cart.CartDetails {
-		if cd.ProductID == product.ID {
-			productInCart = true
-			cart.CartDetails[i].Quantity++
-			cartDetail = cart.CartDetails[i]
-			_, err := h.db.NewUpdate().
-				Model(&cartDetail).
-				Where("id = ?", cartDetail.ID).
-				Column("quantity").
-				Exec(cc.Request().Context())
-			if err != nil {
-				return domain.CartDetail{}, fmt.Errorf("updateOrInsertProductInCart: error updating cart detail: %w", err)
-			}
-			break
-		}
-	}
-
-	if !productInCart {
-		cartDetail = domain.CartDetail{
-			ID:        uuid.New(),
-			CartID:    cart.ID,
-			ProductID: product.ID,
-			Product:   &product,
-			Quantity:  1,
-		}
-		cart.CartDetails = append(cart.CartDetails, cartDetail)
-		_, err := h.db.NewInsert().Model(&cartDetail).Exec(cc.Request().Context())
+func (h addToCartHandler) updateOrInsertInDB(cartDetail domain.CartDetail, found bool, cc shared.AppContext) error {
+	if !found {
+		_, err := h.db.NewInsert().
+			Model(&cartDetail).
+			Exec(cc.Request().Context())
 		if err != nil {
-			return domain.CartDetail{}, fmt.Errorf("updateOrInsertProductInCart: error inserting cart detail: %w", err)
+			return fmt.Errorf("updateOrInsertInDB: error inserting cart detail: %w", err)
 		}
+
+		return nil
 	}
 
-	return cartDetail, nil
+	_, err := h.db.NewUpdate().
+		Model(&cartDetail).
+		Where("id = ?", cartDetail.ID).
+		Column("quantity").
+		Exec(cc.Request().Context())
+	if err != nil {
+		return fmt.Errorf("updateOrInsertInDB: error updating cart detail: %w", err)
+	}
+
+	return nil
+
 }

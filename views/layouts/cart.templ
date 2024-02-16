@@ -73,8 +73,6 @@ templ cart() {
 		<h2 class="text-md font-semibold mb-2 text-slate-700">Your products</h2>
 		<ul
 			id="cart-placeholder"
-			role="region"
-			aria-label="cart"
 			hx-get="/cart"
 			hx-trigger="load"
 			hx-target="this"
@@ -86,6 +84,22 @@ templ cart() {
 			</div>
 		</ul>
 		<div
+			class="flex justify-center items-center h-32 w-full border border-slate-300 rounded-md p-4"
+			_="on cart_updated(value) from body 
+				set result to value as an Object
+				set total to result.total as Int
+				if total == 0
+					show me
+					hide #cart-total
+				else
+					hide me
+					show #cart-total
+				end"
+		>
+			<p class="text-slate-700">The cart is empty</p>
+		</div>
+		<div
+			id="cart-total"
 			class="flex justify-between items-center gap-2 mt-4"
 			_="on cart_updated(value) from body 
 					set result to value as an Object

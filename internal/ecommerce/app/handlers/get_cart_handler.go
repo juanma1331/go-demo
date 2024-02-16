@@ -24,37 +24,9 @@ func NewGetCartHandler(db *bun.DB) getCartHandler {
 func (h getCartHandler) Handler(c echo.Context) error {
 	cc := c.(shared.AppContext)
 
-	carts := []domain.Cart{}
-	err := h.db.NewSelect().
-		Model(&carts).
-		Relation("CartDetails.Product").
-		Where("user_id = ?", cc.User.ID).
-		Scan(cc.Request().Context())
+	cart, err := h.getCart(cc.User.ID, cc)
 	if err != nil {
 		return fmt.Errorf("HandleGetCart: error getting cart: %w", err)
-	}
-
-	token := csrf.Token(cc.Request())
-
-	if len(carts) == 0 {
-		cart := domain.Cart{
-			ID:     uuid.New(),
-			Status: domain.CART_STATUS_ACTIVE,
-			UserID: cc.User.ID,
-		}
-
-		_, err := h.db.NewInsert().Model(&cart).Exec(cc.Request().Context())
-		if err != nil {
-			return err
-		}
-
-		return cc.RenderComponent(layouts.Cart([]layouts.CartProductViewModel{}, token))
-	}
-
-	cart := carts[0]
-
-	if len(cart.CartDetails) == 0 {
-		return cc.RenderComponent(layouts.Cart([]layouts.CartProductViewModel{}, token))
 	}
 
 	cartProducts := make([]layouts.CartProductViewModel, 0, len(cart.CartDetails))
@@ -73,8 +45,8 @@ func (h getCartHandler) Handler(c echo.Context) error {
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
-			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
-			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)),
+			"quantity": fmt.Sprintf("%d", cart.GetTotalQuantity()),
+			"total":    fmt.Sprintf("%d", cart.GetTotalPrice()),
 		},
 	}
 
@@ -83,5 +55,37 @@ func (h getCartHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleGetCart: error setting htmx trigger: %w", err)
 	}
 
+	token := csrf.Token(cc.Request())
+
 	return cc.RenderComponent(layouts.Cart(cartProducts, token))
+}
+
+func (h getCartHandler) getCart(userID uuid.UUID, cc shared.AppContext) (domain.Cart, error) {
+	carts := []domain.Cart{}
+	err := h.db.NewSelect().
+		Model(&carts).
+		Relation("CartDetails.Product").
+		Where("user_id = ?", cc.User.ID).
+		Scan(cc.Request().Context())
+	if err != nil {
+		return domain.Cart{}, fmt.Errorf("HandleGetCart: error getting cart: %w", err)
+	}
+
+	// If the user has no cart, create a new one
+	if len(carts) == 0 {
+		cart := domain.Cart{
+			ID:     uuid.New(),
+			Status: domain.CART_STATUS_ACTIVE,
+			UserID: cc.User.ID,
+		}
+
+		_, err := h.db.NewInsert().Model(&cart).Exec(cc.Request().Context())
+		if err != nil {
+			return domain.Cart{}, fmt.Errorf("HandleGetCart: error inserting cart: %w", err)
+		}
+
+		return cart, nil
+	}
+
+	return carts[0], nil
 }

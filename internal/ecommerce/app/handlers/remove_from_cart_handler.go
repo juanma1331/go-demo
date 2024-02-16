@@ -33,13 +33,7 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 	}
 
 	// Get cart detail
-	var cartDetail domain.CartDetail
-	for _, cd := range cart.CartDetails {
-		if cd.ID.String() == cartDetailId {
-			cartDetail = cd
-			break
-		}
-	}
+	cartDetail := cart.GetCartDetail(uuid.MustParse(cartDetailId))
 
 	if cartDetail.ID == uuid.Nil {
 		return fmt.Errorf("HandleRemoveFromCart: cart detail not found")
@@ -49,13 +43,16 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 		return fmt.Errorf("HandleRemoveFromCart: cart detail quantity is more than 1")
 	}
 
-	// Remove cart detail
-	_, err = h.db.NewDelete().
-		Model(&cartDetail).
-		Where("id = ?", cartDetail.ID).
-		Exec(cc.Request().Context())
+	// Remove cart detail from DB
+	err = h.removeCartDetailInDB(*cartDetail, cc)
 	if err != nil {
-		return fmt.Errorf("HandleRemoveFromCart: error deleting cart detail: %w", err)
+		return fmt.Errorf("HandleRemoveFromCart: error removing cart detail in db: %w", err)
+	}
+
+	// Update cart in memory
+	err = cart.RemoveCartDetail(cartDetail.ID)
+	if err != nil {
+		return fmt.Errorf("HandleRemoveFromCart: error removing cart detail: %w", err)
 	}
 
 	// Notifying the client that the cart was updated
@@ -70,8 +67,8 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
-			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)-1),
-			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)-cartDetail.Product.Price),
+			"quantity": fmt.Sprintf("%d", cart.GetTotalQuantity()),
+			"total":    fmt.Sprintf("%d", cart.GetTotalPrice()),
 		},
 	}
 
@@ -96,4 +93,16 @@ func (h removeFromCartHandler) getActiveCart(userId string, cc shared.AppContext
 		return domain.Cart{}, fmt.Errorf("getActiveCart: error getting cart: %w", err)
 	}
 	return cart, nil
+}
+
+func (h removeFromCartHandler) removeCartDetailInDB(cartDetail domain.CartDetail, cc shared.AppContext) error {
+	_, err := h.db.NewDelete().
+		Model(&cartDetail).
+		Where("id = ?", cartDetail.ID).
+		Exec(cc.Request().Context())
+	if err != nil {
+		return fmt.Errorf("HandleRemoveFromCart: error deleting cart detail: %w", err)
+	}
+
+	return nil
 }
