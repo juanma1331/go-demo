@@ -21,7 +21,7 @@ templ cartToggler() {
 		id="cart-toggler"
 		aria-controls="cart"
 		aria-expanded="false"
-		class="bg-slate-800  transform p-1 rounded-md shadow-md shadow-slate-800"
+		class="bg-slate-800 transition-transform py-1 px-2 rounded-md shadow-md shadow-slate-800"
 		_="on click
 			if #cart's @data-state == 'closed' 
 				remove .shadow-md from me
