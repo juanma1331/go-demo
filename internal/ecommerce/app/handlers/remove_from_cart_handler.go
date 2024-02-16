@@ -71,6 +71,7 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 		Name: "cart_updated",
 		Value: map[string]string{
 			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)-1),
+			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)-cartDetail.Product.Price),
 		},
 	}
 

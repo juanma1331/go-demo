@@ -35,5 +35,5 @@ func GetAuthenticatedUser(ctx context.Context) *shared.AuthenticatedUser {
 }
 
 func FormatPrice(price int64) string {
-	return fmt.Sprintf("$%d", price)
+	return fmt.Sprintf("%d", price)
 }

@@ -58,23 +58,23 @@ func (h getCartHandler) Handler(c echo.Context) error {
 	}
 
 	cartProducts := make([]layouts.CartProductViewModel, 0, len(cart.CartDetails))
-	totalProductsQuantity := 0
 	for _, cartDetail := range cart.CartDetails {
 		cartProducts = append(cartProducts, layouts.CartProductViewModel{
-			DetailID:           cartDetail.ID.String(),
-			ProductID:          cartDetail.ProductID.String(),
+			DetailID:  cartDetail.ID.String(),
+			ProductID: cartDetail.ProductID.String(),
+
 			ProductName:        cartDetail.Product.Name,
 			ProductDescription: cartDetail.Product.Description,
 			ProductPrice:       cartDetail.Product.Price * int64(cartDetail.Quantity),
 			Quantity:           cartDetail.Quantity,
 		})
-		totalProductsQuantity += cartDetail.Quantity
 	}
 
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
-			"quantity": fmt.Sprintf("%d", totalProductsQuantity),
+			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
+			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)),
 		},
 	}
 

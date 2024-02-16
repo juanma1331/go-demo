@@ -85,6 +85,14 @@ templ cart() {
 				Loading cart...
 			</div>
 		</ul>
+		<div
+			class="flex justify-between items-center gap-2 mt-4"
+			_="on cart_updated(value) from body 
+					set result to value as an Object
+					then put '$' + result.total into #total-price"
+		>
+			Total:  <span id="total-price" class="text-slate-900">0</span>
+		</div>
 	</div>
 }
 
@@ -107,19 +115,24 @@ templ CartProduct(m CartProductViewModel, token string) {
 		<div class="w-full h-16 flex items-center justify-between gap-2">
 			<div class="flex flex-col justify-between h-full">
 				<h2 class="text-sm font-semibold text-slate-900">{ m.ProductName }</h2>
-				<p class="text-xs text-slate-700">{ views.FormatPrice(m.ProductPrice) }</p>
+				<p
+					data-cart-item-price={ views.FormatPrice(m.ProductPrice) }
+					class="text-xs text-slate-700"
+				>
+					${ views.FormatPrice(m.ProductPrice) }
+				</p>
 				<p class="text-xs text-slate-700">{ "Qty:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
 			</div>
 			if m.Quantity > 1 {
-				@DecreateQuantityForm(m.DetailID, token)
+				@decreateQuantityForm(m.DetailID, token)
 			} else {
-				@RemoveFromCartForm(m.DetailID, token)
+				@removeFromCartForm(m.DetailID, token)
 			}
 		</div>
 	</li>
 }
 
-templ RemoveFromCartForm(detailID string, token string) {
+templ removeFromCartForm(detailID string, token string) {
 	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
 		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
@@ -129,7 +142,7 @@ templ RemoveFromCartForm(detailID string, token string) {
 	</form>
 }
 
-templ DecreateQuantityForm(detailID string, token string) {
+templ decreateQuantityForm(detailID string, token string) {
 	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
 		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>

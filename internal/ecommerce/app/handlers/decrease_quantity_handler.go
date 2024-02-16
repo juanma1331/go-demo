@@ -72,6 +72,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 		Name: "cart_updated",
 		Value: map[string]string{
 			"quantity": fmt.Sprintf("%d", calculateTotalQuantity(cart.CartDetails)),
+			"total":    fmt.Sprintf("%d", calculateTotalPrice(cart.CartDetails)),
 		},
 	}
 
