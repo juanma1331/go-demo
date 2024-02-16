@@ -13,11 +13,14 @@ templ EcommerceLayout() {
 				<p class="font-Workbench text-2xl text-slate-950">Hypermedia Driven Ecommerce</p>
 				<div class="flex items-center gap-4">
 					if views.HasAuthenticatedUser(ctx) {
-						@cartToggler(views.GetAuthenticatedUser(ctx).Email)
+						<p>
+							{ views.GetAuthenticatedUser(ctx).Email }
+						</p>
+						@cartToggler()
 					}
 					<div class="flex gap-2 items-center">
 						if views.HasAuthenticatedUser(ctx) {
-							<a href="/auth/logout" class="p-2 border border-1 border-slate-300 rounded-md shadow-md">
+							<a href="/auth/logout" class="p-2 border border-1 border-slate-300 rounded-md shadow-lg">
 								@icons.Logout()
 							</a>
 						}
