@@ -42,6 +42,7 @@ func (h getMoreProductsHandler) Handler(c echo.Context) error {
 			ID:          p.ID.String(),
 			Name:        p.Name,
 			Description: p.Description,
+			Price:       p.Price,
 		})
 	}
 
