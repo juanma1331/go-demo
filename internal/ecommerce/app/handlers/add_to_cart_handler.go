@@ -55,7 +55,7 @@ func (h addToCartHandler) Handler(c echo.Context) error {
 	notifyTrigger := shared.HtmxTrigger{
 		Name: "notify",
 		Value: map[string]string{
-			"message": fmt.Sprintf("Product with id=%s has been added", productId),
+			"message": fmt.Sprintf("A product has been added to your cart: %s", product.Name),
 			"type":    "success",
 		},
 	}

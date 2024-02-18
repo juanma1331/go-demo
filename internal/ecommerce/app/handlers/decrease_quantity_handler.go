@@ -51,15 +51,6 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 	}
 
 	// Notifying the client that the cart was updated
-	notifyTrigger := shared.HtmxTrigger{
-		Name: "notify",
-		Value: map[string]string{
-			"message": fmt.Sprintf("Product with id=%s has been removed", cartDetail.ProductID.String()),
-			"type":    "success",
-		},
-	}
-
-	// Notifying the client that the cart was updated
 	cartUpdatedTrigger := shared.HtmxTrigger{
 		Name: "cart_updated",
 		Value: map[string]string{
@@ -68,7 +59,7 @@ func (h decreaseQuantityHandler) Handler(c echo.Context) error {
 		},
 	}
 
-	err = shared.SetHtmxTriggers(cc.Response().Writer, notifyTrigger, cartUpdatedTrigger)
+	err = shared.SetHtmxTriggers(cc.Response().Writer, cartUpdatedTrigger)
 	if err != nil {
 		return fmt.Errorf("HandleDecreaseQuantity: error setting htmx triggers: %w", err)
 	}

@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        Workbench: ["Workbench", "sans-serif"],
-        RobotoMono: ["RobotoMono", "monospace"],
+        workbench: ["Workbench", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
       },
     },
   },

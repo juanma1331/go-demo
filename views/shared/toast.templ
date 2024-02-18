@@ -1,49 +1,70 @@
 package shared
 
-templ Toast() {
-	<script>
-     /**
-    * @param {string} message
-    * @param {string} type
-    * @returns {HTMLDivElement}
-    */
-    function createToast (message, type) {
-        const toast = document.createElement('div')
-        toast.classList.add(
-        'bg-slate-50', 
-        'text-slate-900', 
-        'p-4', 'rounded', 
-        'shadow-md', 
-        'mb-4', 
-        'text-sm',
-        'font-medium', 
-        'tracking-wide',
-        'outline',
-        'outline-1'
-        )
-        
-        if (type === 'success') {
-            toast.classList.add("outline-green-500")
-        } else if (type === 'error') {
-            toast.classList.add('outline-red-500')
-        } else if (type === 'warning') {
-            toast.classList.add('outline-yellow-500')
-        } else if (type === 'info') {
-            toast.classList.add('outline-blue-500')
-        } else {
-            throw new Error('Invalid type provided')
-        }
+import "github.com/juanma1331/go-demo/views/components/icons"
 
-        toast.innerText = message
-        return toast
-    }
+templ Toast() {
+	<script type="text/hyperscript">
+        def getToastToOpen(type)
+			if type is "success"
+				return #toast-success
+			end
+			if type is "info"
+				return #toast-info
+			end
+			if type is "warning"
+				return #toast-warning
+			end
+			if type is "error"
+				return #toast-error
+			end
+
+			throw 'Invalid type of toast. Must be one of: success, info, warning, error.'	
+        end
     </script>
 	<div
-		class="absolute right-24 top-24"
-		_="on every notify(value) from body set result to value as an Object
-            then call createToast(result.message, result.type)
-            then put it at the end of me
-            then wait 3s
-            then remove it"
-	></div>
+		class="absolute left-[50%] translate-x-[-50%] translate-y-[200%] duration-75 ease-in-out transition-transform bottom-3"
+		_="on notify(value) from body 
+            set res to value as an Object
+            set toast to getToastToOpen(res.type)
+            put res.message into (<p /> in toast)
+			remove .hidden from toast
+			transition my *transform to 'translate(-50%, 0)'
+			wait 3s
+			transition my *transform to 'translate(-50%, 200%)'
+			add .hidden to toast
+            end"
+	>
+		<div id="toast-success" class="hidden overflow-hidden pt-1 h-[4.5rem] bg-green-400 rounded-md border-r border-l border-b border-1 border-slate-300">
+			<div class="flex items-center w-full h-full gap-2 px-4 bg-slate-100">
+				@icons.Success()
+				<div>
+					<p id="toast-message" class="font-semibold text-sm text-slate-600"></p>
+				</div>
+			</div>
+		</div>
+		<div id="toast-info" class="hidden overflow-hidden pt-1 h-[4.5rem] bg-blue-400 rounded-md border-r border-l border-b border-1 border-slate-300">
+			<div class="flex items-center w-full h-full gap-2 px-4 bg-slate-100">
+				@icons.Info()
+				<div>
+					<p id="toast-message" class="font-semibold text-sm text-slate-600"></p>
+				</div>
+			</div>
+		</div>
+		<div id="toast-warning" class="hidden overflow-hidden pt-1 h-[4.5rem] bg-yellow-400 rounded-md border-r border-l border-b border-1 border-slate-300">
+			<div class="flex items-center w-full h-full gap-2 px-4 bg-slate-100">
+				@icons.Warning()
+				<div>
+					<p id="toast-message" class="font-semibold text-sm text-slate-600"></p>
+				</div>
+			</div>
+		</div>
+		<div id="toast-error" class="hidden overflow-hidden pt-1 h-[4.5rem] bg-red-400 rounded-md border-r border-l border-b border-1 border-slate-300">
+			<div class="flex items-center w-full h-full gap-2 px-4 bg-slate-100">
+				@icons.Error()
+				<div>
+					<p id="toast-message" class="font-semibold text-sm text-slate-600"></p>
+				</div>
+			</div>
+		</div>
+	</div>
 }

@@ -24,7 +24,7 @@
 
 /* Style the scrollbar thumb */
 ::-webkit-scrollbar-thumb {
-  background: rgb(153, 153, 170); /* Thumb color */
+  background: #1e293b; /* Thumb color */
   border-radius: 3px; /* Roundness of the thumb */
 }
 

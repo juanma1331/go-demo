@@ -10,7 +10,8 @@ templ EcommerceLayout() {
 	@Base() {
 		<header class="h-16 mb-6">
 			<div class="container max-w-7xl mx-auto flex justify-between items-center h-full">
-				<p class="font-Workbench text-2xl text-slate-950">Hypermedia Driven Ecommerce</p>
+				<p class="font-workbench text-2xl text-slate-950">Hypermedia Driven Ecommerce</p>
+				@testToastControls()
 				<div class="flex items-center gap-4">
 					if views.HasAuthenticatedUser(ctx) {
 						<p>
@@ -36,4 +37,65 @@ templ EcommerceLayout() {
 		@cart()
 		{ children... }
 	}
+}
+
+templ testToastControls() {
+	<div class="space-y-2 rounded-md text-sm">
+		<p class="text-center font-semibold">Test the toast 😊</p>
+		<div class="flex flex-wrap gap-2">
+			<button
+				class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800 transition-transform"
+				_="on click
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					set toastData to { message: 'This is a success message', type: 'success' } as JSON
+					send notify(value: toastData)
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me
+				"
+			>
+				@icons.Success()
+			</button>
+			<button
+				class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800"
+				_="on click
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					set toastData to { message: 'This is an error message', type: 'error' } as JSON
+					send notify(value: toastData)
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me"
+			>
+				@icons.Error()
+			</button>
+			<button
+				class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800"
+				_="on click
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					set toastData to { message: 'This is a warning message', type: 'warning' } as JSON
+					send notify(value: toastData)
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me"
+			>
+				@icons.Warning()
+			</button>
+			<button
+				class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800"
+				_="on click
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					set toastData to { message: 'This is an info message', type: 'info' } as JSON
+					send notify(value: toastData)
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me"
+			>
+				@icons.Info()
+			</button>
+		</div>
+	</div>
 }

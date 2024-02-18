@@ -59,7 +59,7 @@ func (h removeFromCartHandler) Handler(c echo.Context) error {
 	notifyTrigger := shared.HtmxTrigger{
 		Name: "notify",
 		Value: map[string]string{
-			"message": fmt.Sprintf("Product with id=%s has been removed", cartDetail.ProductID.String()),
+			"message": fmt.Sprintf("A product has been removed from your cart: %s", cartDetail.Product.Name),
 			"type":    "success",
 		},
 	}

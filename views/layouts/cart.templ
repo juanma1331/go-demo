@@ -56,7 +56,7 @@ templ cartCounter() {
 templ cart() {
 	<div
 		id="cart"
-		class="absolute top-14 right-[-32rem] w-[32rem] min-h-screen transition-all ease-in-out z-10 p-4 border border-1 border-slate-200 bg-white"
+		class="absolute top-14 right-[-100vw] w-[28vw] min-h-screen transition-all ease-in-out z-10 p-4 border border-1 border-slate-200 bg-white"
 		data-state="closed"
 		_="on every cart_toggle
 			if @data-state == 'closed' 
@@ -67,43 +67,49 @@ templ cart() {
 				transition my *right to initial over 0.2 seconds
 			end"
 	>
-		<h2 class="text-md font-semibold mb-2 text-slate-700">Your products</h2>
+		<div class="flex items-center justify-between">
+			<h2 class="text-md font-semibold text-slate-700">Your products</h2>
+			<img src="/static/icons/spinner.svg" id="cart-indicator" class="my-indicator"/>
+		</div>
 		<ul
 			id="cart-placeholder"
 			hx-get="/cart"
 			hx-trigger="load"
 			hx-target="this"
 			hx-indicator="#indicator"
-			class="space-y-2"
+			class="space-y-2 max-h-[42rem] overflow-y-auto pr-2 mt-2"
 		>
 			<div id="indicator">
 				Loading cart...
 			</div>
 		</ul>
 		<div
-			class="flex justify-center items-center h-32 w-full border border-slate-300 rounded-md p-4"
+			class="flex justify-center items-center h-96"
 			_="on cart_updated(value) from body 
 				set result to value as an Object
 				set total to result.total as Int
 				if total == 0
 					show me
 					hide #cart-total
+					hide #checkout
 				else
 					hide me
 					show #cart-total
+					show #checkout
 				end"
 		>
 			<p class="text-slate-700">The cart is empty</p>
 		</div>
 		<div
 			id="cart-total"
-			class="flex justify-between items-center gap-2 mt-4"
+			class="flex justify-between items-center gap-2 mt-4 border border-1 border-slate-300 p-2 rounded-md font-bold"
 			_="on cart_updated(value) from body 
 					set result to value as an Object
 					then put '$' + result.total into #total-price"
 		>
-			Total:  <span id="total-price" class="text-slate-900">0</span>
+			Total:  <span id="total-price" class="text-slate-900 font-semibold">0</span>
 		</div>
+		<a id="checkout" href="#" class="block w-full bg-slate-800 text-center text-white font-semibold py-2 px-4 rounded hover:bg-slate-700 shadow shadow-slate-800 mt-2">Fake Checkout</a>
 	</div>
 }
 
@@ -124,15 +130,17 @@ templ CartProduct(m CartProductViewModel, token string) {
 			class="aspect-square h-16 rounded-md"
 		/>
 		<div class="w-full h-16 flex items-center justify-between gap-2">
-			<div class="flex flex-col justify-between h-full">
-				<h2 class="text-sm font-semibold text-slate-900">{ m.ProductName }</h2>
-				<p
-					data-cart-item-price={ views.FormatPrice(m.ProductPrice) }
-					class="text-xs text-slate-700"
-				>
-					${ views.FormatPrice(m.ProductPrice) }
-				</p>
-				<p class="text-xs text-slate-700">{ "Qty:  " }{ fmt.Sprintf("%d", m.Quantity) }</p>
+			<div class="flex flex-col justify-evenly h-full">
+				<h2 class="text-sm font-semibold text-slate-700">{ m.ProductName }</h2>
+				<div class="flex items-center gap-1">
+					<p
+						data-cart-item-price={ views.FormatPrice(m.ProductPrice) }
+						class="text-xs font-semibold text-slate-500"
+					>
+						${ views.FormatPrice(m.ProductPrice) }
+					</p>
+					<p class="text-xs text-slate-800 font-semibold">{ fmt.Sprintf("(x%d)", m.Quantity) }</p>
+				</div>
 			</div>
 			if m.Quantity > 1 {
 				@decreateQuantityForm(m.DetailID, token)
@@ -144,21 +152,53 @@ templ CartProduct(m CartProductViewModel, token string) {
 }
 
 templ removeFromCartForm(detailID string, token string) {
-	<form hx-post="/cart/delete" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
+	<form
+		hx-post="/cart/delete"
+		hx-target={ fmt.Sprintf("#cart-item-%s", detailID) }
+		hx-swap="outerHTML"
+		hx-indicator="#cart-indicator"
+	>
 		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			X
+		<button
+			type="submit"
+			class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800 transition-transform"
+			_="on click
+					halt the event
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me
+					send submit to the closest <form />"
+		>
+			@icons.Close()
 		</button>
 	</form>
 }
 
 templ decreateQuantityForm(detailID string, token string) {
-	<form hx-patch="/cart" hx-target={ fmt.Sprintf("#cart-item-%s", detailID) } hx-swap="outerHTML">
+	<form
+		hx-patch="/cart"
+		hx-target={ fmt.Sprintf("#cart-item-%s", detailID) }
+		hx-swap="outerHTML"
+		hx-indicator="#cart-indicator"
+	>
 		<input type="hidden" name="cart_detail_id" value={ detailID }/>
 		<input type="hidden" name={ shared.CSRFTokenKey } value={ token }/>
-		<button type="submit" class="py-1 px-2 text-slate-50 text-sm bg-slate-500 rounded-md shadow-md">
-			-
+		<button
+			type="submit"
+			class="py-1 px-2 rounded-lg bg-slate-800 shadow-md shadow-slate-800 transition-transform"
+			_="on click
+					halt the event
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me
+					send submit to the closest <form />"
+		>
+			@icons.Decrease()
 		</button>
 	</form>
 }
