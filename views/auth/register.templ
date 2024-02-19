@@ -3,6 +3,8 @@ package auth
 import (
 	"github.com/juanma1331/go-demo/views/layouts"
 	"github.com/juanma1331/go-demo/internal/shared"
+	"github.com/juanma1331/go-demo/views/components/typography"
+	"github.com/juanma1331/go-demo/views/components"
 )
 
 type RegisterPageViewModel struct {
@@ -12,48 +14,89 @@ type RegisterPageViewModel struct {
 
 templ RegisterPage(m RegisterPageViewModel) {
 	@layouts.Base() {
-		<h1>New Account</h1>
-		<form action="/auth/register" method="post">
-			<input type="hidden" name={ shared.CSRFTokenKey } value={ m.CSRFToken }/>
-			<div>
-				<label for="email">Email</label>
-				<input
-					id="email"
-					type="email"
-					name="email"
-					placeholder="Email"
-					hx-get="/auth/register/validate-email"
-					hx-trigger="change, keyup delay:200ms changed"
-					hx-target="next .errors"
-				/>
-				<ul class="errors">
-					if m.Errors != nil {
-						for _, errMsg := range (*m.Errors)["Email"] {
-							<li>{ errMsg }</li>
-						}
-					}
-				</ul>
+		<main class="h-full flex items-center justify-center gap-2">
+			<div class="space-y-8">
+				@typography.Title("Feel the Hypermedia Power", "font-workbench", 1)
+				<div class="space-y-2">
+					@typography.Title("Register", "text-center", 2)
+					<form action="/auth/register" method="post" hx-sync>
+						<input type="hidden" name={ shared.CSRFTokenKey } value={ m.CSRFToken }/>
+						<div class="flex flex-col mb-4">
+							<label for="email" class="mb-2 text-slate-800">Email</label>
+							<input
+								id="email"
+								type="email"
+								name="email"
+								class="border-1 border-gray-300 p-2 rounded-md focus:outline-none focus:border-slate-800 transition-colors"
+								hx-get="/auth/register/validate-email"
+								hx-trigger="change, keyup delay:200ms changed"
+								hx-target="next .errors"
+								hx-sync="closest form:abort"
+							/>
+							<div class="errors">
+								if m.Errors != nil {
+									@components.ValidationErrors(m.Errors, "Email")
+								}
+							</div>
+						</div>
+						<div class="flex flex-col mb-6">
+							<label for="password" class="mb-2 text-slate-800">Password</label>
+							<input
+								id="password"
+								type="password"
+								name="password"
+								class="border-1 border-gray-300 p-2 rounded-md focus:outline-none focus:border-slate-800 transition-colors"
+								hx-get="/auth/register/validate-password"
+								hx-trigger="change, keyup delay:200ms changed"
+								hx-target="next .errors"
+								hx-sync="closest form:abort"
+							/>
+							<div class="errors">
+								if m.Errors != nil {
+									@components.ValidationErrors(m.Errors, "Password")
+								}
+							</div>
+						</div>
+						<div class="space-y-2 w-full">
+							<button
+								type="submit"
+								class="w-full bg-slate-800 text-white font-semibold py-2 px-4 rounded-md shadow-md shadow-slate-800 transition-transform"
+								_="on click
+								halt the event
+								set my *transform to 'scale(0.95)'
+								remove .shadow-md from me
+								wait 75ms
+								set my *transform to 'scale(1)'
+								add .shadow-md to me
+								wait 75ms
+								send submit to the closest <form />"
+							>
+								Register
+							</button>
+							<div class="w-full flex items-center justify-center gap-1">
+								<div class="h-[1px] bg-slate-300 w-9"></div>
+								<span class="text-sm text-slate-500">OR</span>
+								<div class="h-[1px] bg-slate-300 w-9"></div>
+							</div>
+							<a
+								href="/auth/login"
+								class="block w-full text-slate-800 text-center font-semibold py-2 px-4 rounded-md transition-transform border border-1 focus:border-slate-800 shadow-md shadow-slate-400"
+								_="on click
+      								halt the event
+      								set my *transform to 'scale(0.95)'
+      								remove .shadow-md from me
+      								wait 75ms
+      								set my *transform to 'scale(1)'
+      								add .shadow-md to me
+      								wait 100ms
+      								go to '/auth/login'"
+							>
+								Login
+							</a>
+						</div>
+					</form>
+				</div>
 			</div>
-			<div>
-				<label for="password">Password</label>
-				<input
-					id="password"
-					type="password"
-					name="password"
-					placeholder="Password"
-					hx-get="/auth/register/validate-password"
-					hx-trigger="change, keyup delay:200ms changed"
-					hx-target="next .errors"
-				/>
-				<ul class="errors">
-					if m.Errors != nil {
-						for _, errMsg := range (*m.Errors)["Password"] {
-							<li>{ errMsg }</li>
-						}
-					}
-				</ul>
-			</div>
-			<button type="submit">Register</button>
-		</form>
+		</main>
 	}
 }

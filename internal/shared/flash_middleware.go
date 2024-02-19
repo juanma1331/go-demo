@@ -14,8 +14,8 @@ func (fm FlashMiddleware) WithFlashMiddleWare(next echo.HandlerFunc) echo.Handle
 
 		flashMessages, err := fm.FlashStore.LoadFlash(cc)
 		if err != nil {
-			c.Error(echo.ErrInternalServerError)
-			return next(c)
+			cc.Error(echo.ErrInternalServerError)
+			return next(cc)
 		}
 
 		cc.Flash = flashMessages

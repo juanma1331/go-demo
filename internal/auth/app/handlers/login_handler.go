@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-const AFTER_LOGIN_REDIRECT_PATH = "/"
+const AFTER_LOGIN_REDIRECT_PATH = "/products"
 
 type loginHandler struct {
 	authService services.AuthService
@@ -26,7 +26,7 @@ func NewLoginHandler(as services.AuthService, fs shared.FlashStore) loginHandler
 	}
 }
 
-func (uh *loginHandler) Handler(c echo.Context) error {
+func (uh loginHandler) Handler(c echo.Context) error {
 	cc := c.(shared.AppContext)
 
 	input := services.LoginInput{}

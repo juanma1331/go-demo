@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/juanma1331/go-demo/views/layouts"
 	"github.com/juanma1331/go-demo/internal/shared"
+	"github.com/juanma1331/go-demo/views/components/typography"
 )
 
 type LoginPageViewModel struct {
@@ -12,23 +13,66 @@ type LoginPageViewModel struct {
 
 templ LoginPage(m LoginPageViewModel) {
 	@layouts.Base() {
-		<main>
-			<h1 class="text-red-400 text-center">Login</h1>
-			<form action="/auth/login" method="post">
-				if m.HasInvalidCredentials {
-					<p class="text-red-400 text-center">Invalid credentials</p>
-				}
-				<input type="hidden" name={ shared.CSRFTokenKey } value={ m.CSRFToken }/>
-				<div class="flex flex-col">
-					<label for="email">Email</label>
-					<input type="email" name="email" id="email"/>
+		<main class="flex items-center justify-center gap-2 h-full">
+			<div class="space-y-8">
+				@typography.Title("Feel the Hypermedia Power", "font-workbench", 1)
+				<div class="space-y-2">
+					@typography.Title("Login", "text-center", 2)
+					<form action="/auth/login" method="post">
+						if m.HasInvalidCredentials {
+							<div class="flex items-center justify-center p-2 border-1 rounded-md border-red-300 my-4">
+								<p class="text-red-500 text-center font-semibold">Invalid credentials</p>
+							</div>
+						}
+						<input type="hidden" name={ shared.CSRFTokenKey } value={ m.CSRFToken }/>
+						<div class="flex flex-col mb-4">
+							<label for="email" class="mb-2 text-slate-800">Email</label>
+							<input type="email" name="email" id="email" class="border-1 border-gray-300 p-2 rounded-md focus:outline-none focus:border-slate-800 transition-colors"/>
+						</div>
+						<div class="flex flex-col mb-6">
+							<label for="password" class="mb-2 text-slate-800">Password</label>
+							<input type="password" name="password" id="password" class="border-1 border-gray-300 p-2 rounded-md focus:outline-none focus:border-slate-800 transition-colors"/>
+						</div>
+						<div class="space-y-2 w-full">
+							<button
+								type="submit"
+								class="w-full bg-slate-800 text-white font-semibold py-2 px-4 rounded-md shadow-md shadow-slate-800 transition-transform"
+								_="on click
+								halt the event
+								set my *transform to 'scale(0.95)'
+								remove .shadow-md from me
+								wait 75ms
+								set my *transform to 'scale(1)'
+								add .shadow-md to me
+								wait 75ms
+								send submit to the closest <form />"
+							>
+								Login
+							</button>
+							<div class="w-full flex items-center justify-center gap-1">
+								<div class="h-[1px] bg-slate-300 w-9"></div>
+								<span class="text-sm text-slate-500">OR</span>
+								<div class="h-[1px] bg-slate-300 w-9"></div>
+							</div>
+							<a
+								href="/auth/register"
+								class="block w-full text-slate-800 text-center font-semibold py-2 px-4 rounded-md transition-transform border border-1 focus:border-slate-800 shadow-md shadow-slate-400"
+								_="on click
+      								halt the event
+      								set my *transform to 'scale(0.95)'
+      								remove .shadow-md from me
+      								wait 75ms
+      								set my *transform to 'scale(1)'
+      								add .shadow-md to me
+      								wait 100ms
+      								go to '/auth/register'"
+							>
+								Register
+							</a>
+						</div>
+					</form>
 				</div>
-				<div class="flex flex-col">
-					<label for="password">Password</label>
-					<input type="password" name="password" id="password"/>
-				</div>
-				<button type="submit">Login</button>
-			</form>
+			</div>
 		</main>
 	}
 }

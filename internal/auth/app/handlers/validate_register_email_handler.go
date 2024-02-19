@@ -31,9 +31,7 @@ func (h validateRegisterEmailHandler) Handler(c echo.Context) error {
 	}
 
 	if output.ValidationErrors != nil {
-		errors := (*output.ValidationErrors)["Email"]
-
-		return cc.RenderComponent(components.ValidationErrors(errors))
+		return cc.RenderComponent(components.ValidationErrors(output.ValidationErrors, "Email"))
 	}
 
 	return cc.String(200, "")

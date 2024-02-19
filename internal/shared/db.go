@@ -2,6 +2,7 @@ package shared
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 
 	"github.com/uptrace/bun"
@@ -11,6 +12,8 @@ import (
 
 func OpenDB() (*bun.DB, error) {
 	dsn := os.Getenv("DATABASE_URL")
+
+	fmt.Println(dsn)
 
 	db := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	if err := db.Ping(); err != nil {

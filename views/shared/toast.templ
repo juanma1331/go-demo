@@ -23,7 +23,7 @@ templ Toast() {
     </script>
 	<div
 		class="absolute left-[50%] translate-x-[-50%] translate-y-[200%] duration-75 ease-in-out transition-transform bottom-3"
-		_="on notify(value) from body 
+		_="on notify(value) from document 
             set res to value as an Object
             set toast to getToastToOpen(res.type)
             put res.message into (<p /> in toast)

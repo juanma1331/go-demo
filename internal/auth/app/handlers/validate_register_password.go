@@ -31,9 +31,7 @@ func (h validateRegisterPassword) Handler(c echo.Context) error {
 	}
 
 	if output.ValidationErrors != nil {
-		errors := (*output.ValidationErrors)["Password"]
-
-		return cc.RenderComponent(components.ValidationErrors(errors))
+		return cc.RenderComponent(components.ValidationErrors(output.ValidationErrors, "Password"))
 	}
 
 	return cc.String(200, "")

@@ -1,7 +1,13 @@
 package components
 
-templ ValidationErrors(valErrs []string) {
-	for _, err := range valErrs {
-		<li>{ err }</li>
-	}
+import (
+	"github.com/juanma1331/go-demo/internal/shared"
+)
+
+templ ValidationErrors(valErrs *shared.ValidationErrors, field string) {
+	<ul class="space-y-1">
+		for _, err := range (*valErrs)[field] {
+			<li class="mb-1 text-xs text-red-500">{ err }</li>
+		}
+	</ul>
 }

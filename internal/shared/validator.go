@@ -1,8 +1,6 @@
 package shared
 
 import (
-	"fmt"
-
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -57,8 +55,6 @@ func (pv playgroundValidator) handleValidationError(err error) (*ValidationError
 	}
 
 	if valErrs, ok := err.(validator.ValidationErrors); ok {
-
-		fmt.Printf("%+v\n", valErrs)
 		return pv.convertValidationErrors(valErrs), nil
 	}
 
