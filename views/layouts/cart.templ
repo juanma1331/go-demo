@@ -109,7 +109,20 @@ templ cart() {
 		>
 			Total:  <span id="total-price" class="text-slate-900 font-semibold">0</span>
 		</div>
-		<a id="checkout" href="#" class="block w-full bg-slate-800 text-center text-white font-semibold py-2 px-4 rounded hover:bg-slate-700 shadow shadow-slate-800 mt-2">Fake Checkout</a>
+		<button
+			id="checkout"
+			class="block w-full bg-slate-800 text-center text-white font-semibold py-2 px-4 rounded hover:bg-slate-700 shadow shadow-slate-800 mt-2"
+			_="on click
+					set my *transform to 'scale(0.95)'
+					remove .shadow-md from me
+					set toastData to { message: 'Thank you for trying the demo.😉', type: 'success' } as JSON
+					send notify(value: toastData)
+					wait 75ms
+					set my *transform to 'scale(1)'
+					add .shadow-md to me"
+		>
+			Fake Checkout
+		</button>
 	</div>
 }
 
